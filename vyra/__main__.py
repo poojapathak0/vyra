@@ -13,6 +13,7 @@ from .parser import VyraParser
 from .logic_graph import LogicGraph
 from .interpreter import VyraInterpreter
 from .ai_rewriter import rewrite_source, AiRewriteError, AiRewriteConfig
+from .loader import load_source, IncludeError
 
 console = Console()
 
@@ -20,9 +21,13 @@ console = Console()
 def run_file(filepath: str, debug: bool = False, visualize: bool = False, ai: bool = False):
     """Run a Vyra file"""
     try:
-        # Read source code
-        with open(filepath, 'r', encoding='utf-8') as f:
-            source_code = f.read()
+        # Read and expand includes
+        try:
+            source = load_source(filepath)
+            source_code = source.text
+        except IncludeError as e:
+            console.print(f"[bold red]❌ Include Error:[/bold red] {e}")
+            return 1
         
         console.print(f"\n[bold cyan]Running:[/bold cyan] {filepath}\n")
         
@@ -213,8 +218,12 @@ def repl(ai: bool = False):
 def parse_only(filepath: str, output: str = None, ai: bool = False):
     """Parse file and output AST"""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
-            source_code = f.read()
+        try:
+            source = load_source(filepath)
+            source_code = source.text
+        except IncludeError as e:
+            console.print(f"[bold red]Include Error:[/bold red] {e}")
+            return 1
 
         if ai:
             try:
@@ -259,11 +268,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    vyra run program.intent              Run a program
-    vyra run --debug program.intent      Run with debug output
-    vyra run --viz program.intent        Run and visualize graph
+    vyra run program.vyra                Run a program
+    vyra run --debug program.vyra        Run with debug output
+    vyra run --viz program.vyra          Run and visualize graph
     vyra repl                            Start interactive REPL
-    vyra parse program.intent            Parse and show graph
+    vyra parse program.vyra              Parse and show graph
     vyra parse -o graph.json program     Export graph to JSON
         """
     )
@@ -272,7 +281,7 @@ Examples:
     
     # Run command
     run_parser = subparsers.add_parser('run', help='Run a Vyra program')
-    run_parser.add_argument('file', help='Vyra source file (.intent)')
+    run_parser.add_argument('file', help='Vyra source file (.vyra recommended; .intent also supported)')
     run_parser.add_argument('-d', '--debug', action='store_true', help='Enable debug output')
     run_parser.add_argument('-v', '--viz', action='store_true', help='Visualize logic graph')
     run_parser.add_argument('--ai', action='store_true', help='Enable optional AI rewrite (requires VYRA_AI_URL and VYRA_AI_MODEL)')

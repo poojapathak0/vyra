@@ -44,6 +44,8 @@ htmlcov/
 # Vyra specific
 *.intent.cache
 *.intent.compiled
+*.vyra.cache
+*.vyra.compiled
 graph_output/
 benchmark_results/
 

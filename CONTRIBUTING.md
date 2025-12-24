@@ -92,8 +92,8 @@ Before submitting, ensure:
 
 ```bash
 # Test your changes with example programs
-python -m vyra run examples/hello.intent
-python -m vyra run examples/calculator.intent
+python -m vyra run examples/hello.vyra
+python -m vyra run examples/calculator.vyra
 
 # Try the REPL
 python -m vyra repl

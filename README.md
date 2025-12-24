@@ -40,14 +40,14 @@ pip install -r requirements.txt
 ### Run Your First Program
 
 ```bash
-python -m vyra run examples/hello.intent
+python -m vyra run examples/hello.vyra
 ```
 
 ### Optional: AI Rewrite Mode (off by default)
 
 Vyra can optionally send your source to an external LLM to rewrite "free-form English" into canonical Vyra code *before* parsing.
 
-- Enable per command: `vyra run --ai program.intent`, `vyra parse --ai program.intent`, or `vyra repl --ai`
+- Enable per command: `vyra run --ai program.vyra`, `vyra parse --ai program.vyra`, or `vyra repl --ai`
 - Configure via environment variables:
      - `VYRA_AI_URL` = OpenAI-compatible Chat Completions endpoint URL
      - `VYRA_AI_MODEL` = model name
@@ -56,6 +56,30 @@ Vyra can optionally send your source to an external LLM to rewrite "free-form En
      - `VYRA_AI_TIMEOUT` = request timeout seconds (default 30)
 
 If `--ai` is enabled but the required variables are missing, Vyra prints an AI rewrite error and exits.
+
+### Multi-file Programs (Include)
+
+Vyra supports simple multi-file programs using an include preprocessor step:
+
+```vyra
+Include "lib.vyra".
+Display "Main loaded".
+```
+
+Include paths are resolved relative to the including file. Include cycles are detected.
+
+### Optional: Python Bridge Built-in (off by default)
+
+Vyra can optionally call allowlisted Python functions using the built-in `py_call`.
+
+```vyra
+Set r to call py_call with "math" and "sqrt" and 16.
+Display the value of r.
+```
+
+Safety:
+- Disabled unless `VYRA_PY_BRIDGE=1`
+- Only modules in `VYRA_PY_ALLOW` (comma-separated) can be imported
 
 ### Interactive REPL
 
@@ -74,16 +98,17 @@ python -m vyra repl
 
 ## 🎮 Example Programs
 
-- **Hello World**: [examples/hello.intent](examples/hello.intent)
-- **Calculator**: [examples/calculator.intent](examples/calculator.intent)
-- **Functions**: [examples/functions.intent](examples/functions.intent)
-- **Game**: [examples/number_game.intent](examples/number_game.intent)
-- **Lists**: [examples/list_processing.intent](examples/list_processing.intent)
-- **Fibonacci**: [examples/fibonacci.intent](examples/fibonacci.intent)
-- **File I/O**: [examples/file_io.intent](examples/file_io.intent)
-- **Greeting**: [examples/greeting.intent](examples/greeting.intent)
-- **Temperature**: [examples/temperature.intent](examples/temperature.intent)
+- **Hello World**: [examples/hello.vyra](examples/hello.vyra)
+- **Calculator**: [examples/calculator.vyra](examples/calculator.vyra)
+- **Functions**: [examples/functions.vyra](examples/functions.vyra)
+- **Game**: [examples/number_game.vyra](examples/number_game.vyra)
+- **Lists**: [examples/list_processing.vyra](examples/list_processing.vyra)
+- **Fibonacci**: [examples/fibonacci.vyra](examples/fibonacci.vyra)
+- **File I/O**: [examples/file_io.vyra](examples/file_io.vyra)
+- **Greeting**: [examples/greeting.vyra](examples/greeting.vyra)
+- **Temperature**: [examples/temperature.vyra](examples/temperature.vyra)
 
+Note: `.vyra` is the recommended file extension. `.intent` is still supported for backward compatibility.
 ## 🏛️ Architecture
 
 ```

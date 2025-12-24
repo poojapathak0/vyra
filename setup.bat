@@ -35,7 +35,7 @@ echo  Setup Complete!
 echo ================================
 echo.
 echo Try these commands:
-echo   python -m vyra run examples\hello.intent
+echo   python -m vyra run examples\hello.vyra
 echo   python -m vyra repl
 echo.
 pause

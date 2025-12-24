@@ -101,6 +101,26 @@ Read file "data.txt" into content.
 Write text to file "output.txt".
 ```
 
+## Multi-file Programs (Include)
+
+```vyra
+Include "utils.vyra".
+Display "Loaded".
+```
+
+## Python Bridge (Optional)
+
+Call allowlisted Python functions (disabled by default):
+
+```vyra
+Set r to call py_call with "math" and "sqrt" and 16.
+Display the value of r.
+```
+
+Enable with env vars:
+- `VYRA_PY_BRIDGE=1`
+- `VYRA_PY_ALLOW=math,json`
+
 ## Comments
 
 ```vyra
@@ -119,20 +139,25 @@ Note: This is also a comment.
 
 ```bash
 # Run a program
-python -m vyra run program.intent
+python -m vyra run program.vyra
 
 # Start REPL
 python -m vyra repl
 
 # Debug mode
-python -m vyra run --debug program.intent
+python -m vyra run --debug program.vyra
 
 # Visualize graph
-python -m vyra run --viz program.intent
+python -m vyra run --viz program.vyra
 
 # Parse only
-python -m vyra parse program.intent
+python -m vyra parse program.vyra
+
+# Optional AI rewrite
+python -m vyra run --ai program.vyra
 ```
+
+Note: `.vyra` is the recommended file extension. `.intent` is still supported for backward compatibility.
 
 ## Common Patterns
 

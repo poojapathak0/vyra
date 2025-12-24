@@ -17,7 +17,7 @@ Welcome to Vyra! This tutorial will teach you how to write code in plain English
 
 ## Getting Started
 
-Create a new file with the `.intent` extension (e.g., `myprogram.intent`) and start writing!
+Create a new file with the `.vyra` extension (e.g., `myprogram.vyra`) and start writing!
 
 ### Your First Program
 
@@ -27,8 +27,10 @@ Display "Hello, World!".
 
 Run it:
 ```bash
-python -m vyra run myprogram.intent
+python -m vyra run myprogram.vyra
 ```
+
+Note: `.vyra` is the recommended file extension. `.intent` is still supported for backward compatibility.
 
 ## Basic Concepts
 

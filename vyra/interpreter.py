@@ -8,6 +8,8 @@ import json
 import math
 import random
 import time
+import os
+import importlib
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from .logic_graph import LogicGraph, GraphNode
@@ -565,6 +567,40 @@ class VyraInterpreter:
     def _call_builtin(self, name: str, args: List[Any]) -> Any:
         """Call built-in function"""
         n = (name or '').strip().lower()
+
+        # Python bridge (opt-in)
+        # Usage from Vyra: Set x to call py_call with "math" and "sqrt" and 16.
+        if n in {'py_call', 'python_call'}:
+            enabled = os.getenv('VYRA_PY_BRIDGE', '0').strip().lower() in {'1', 'true', 'yes', 'on'}
+            if not enabled:
+                raise RuntimeError("Python bridge is disabled. Set VYRA_PY_BRIDGE=1 to enable.")
+
+            if len(args) < 2:
+                raise ValueError('py_call expects at least 2 arguments: module_name, function_path, [args...]')
+
+            module_name = str(args[0])
+            func_path = str(args[1])
+            call_args = args[2:]
+
+            allow_raw = os.getenv('VYRA_PY_ALLOW', '').strip()
+            allowed = {m.strip() for m in allow_raw.split(',') if m.strip()}
+            if module_name not in allowed:
+                raise RuntimeError(
+                    f"Python module '{module_name}' is not allowed. "
+                    "Set VYRA_PY_ALLOW to a comma-separated allowlist (e.g., VYRA_PY_ALLOW=math,json)."
+                )
+
+            mod = importlib.import_module(module_name)
+            target: Any = mod
+            for part in func_path.split('.'):
+                if not part:
+                    continue
+                target = getattr(target, part)
+
+            if not callable(target):
+                raise TypeError(f"Python target '{module_name}.{func_path}' is not callable")
+
+            return target(*call_args)
 
         # Type / basics
         if n in ['len', 'length']:
