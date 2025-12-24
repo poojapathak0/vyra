@@ -4,6 +4,7 @@ Uses pattern matching and NLP-style heuristics to understand natural language co
 """
 
 import re
+import difflib
 from typing import List, Optional, Tuple, Dict, Any
 from .ast_nodes import *
 
@@ -46,6 +47,42 @@ class VyraParser:
         self.logical_ops = {
             'and': 'and', 'or': 'or', 'not': 'not'
         }
+
+        # Suggestion templates for unknown statements (used only for error messages)
+        self._suggestion_templates: List[str] = [
+            'Set <variable> to <value>',
+            'Store <value> in <variable>',
+            'Display <value>',
+            'Ask the user for <name> and store it in <variable>',
+            'If <condition>:',
+            'Otherwise:',
+            'While <condition>:',
+            'Repeat <n> times:',
+            'For each <item> in <list>:',
+            'Create a list called <name> with values [a, b, c]',
+            'Append <value> to <list>',
+            'Read file <path> into <variable>',
+            'Write <value> to file <path>',
+            'Create function <name> that takes a and b:',
+            'Call <name> with <args> and store the result in <variable>',
+            'Return <value>',
+            'Break',
+            'Continue',
+        ]
+
+        self._known_verbs: List[str] = [
+            'create', 'make', 'define',
+            'set', 'store', 'save',
+            'add', 'subtract', 'multiply', 'divide', 'increment', 'decrement',
+            'ask', 'get', 'prompt',
+            'display', 'show', 'print', 'say',
+            'if', 'when', 'otherwise', 'else',
+            'repeat', 'while', 'loop', 'for',
+            'call', 'run', 'return',
+            'read', 'write', 'load',
+            'append',
+            'break', 'continue', 'exit',
+        ]
 
     
     def _build_action_patterns(self) -> Dict[str, List[Tuple[str, str]]]:
@@ -212,7 +249,87 @@ class VyraParser:
         
         # If no pattern matched, try to parse as expression or error
         self.errors.append(f"Line {self.current_line}: Could not understand: '{line}'")
+        suggestions = self._suggest_statement(line)
+        for suggestion in suggestions:
+            self.errors.append(f"  Did you mean: {suggestion}?")
         return None, 1
+
+    def _normalize_for_suggestion(self, text: str) -> str:
+        text = text.strip().lower()
+        text = text.replace('\t', ' ')
+        text = re.sub(r'\s+', ' ', text)
+        # Keep ':' because it's meaningful for blocks, but drop trailing '.' for matching
+        if text.endswith('.'):
+            text = text[:-1].strip()
+        return text
+
+    def _suggest_statement(self, original_line: str) -> List[str]:
+        """Suggest likely intended statements for unknown lines.
+
+        This is intentionally conservative: it does NOT modify behavior, only adds hints.
+        """
+        line = self._normalize_for_suggestion(original_line)
+        if not line:
+            return []
+
+        original_trim = original_line.strip()
+        if original_trim.endswith('.'):
+            original_trim = original_trim[:-1].strip()
+
+        suggestions: List[str] = []
+
+        # Hint: missing ':' for block statements
+        if not line.endswith(':'):
+            starts_like_block = (
+                line.startswith('if ') or line.startswith('when ') or
+                line.startswith('while ') or line.startswith('repeat ') or
+                line.startswith('loop ') or line.startswith('for each ') or
+                line.startswith('otherwise') or line.startswith('else')
+            )
+            if starts_like_block:
+                if line.startswith(('otherwise', 'else')):
+                    suggestions.append('Otherwise:')
+                elif line.startswith(('if ', 'when ')):
+                    suggestions.append('If <condition>:')
+                elif line.startswith(('while ', 'loop while ')):
+                    suggestions.append('While <condition>:')
+                elif line.startswith('repeat '):
+                    suggestions.append('Repeat <n> times:')
+                elif line.startswith('for each '):
+                    suggestions.append('For each <item> in <list>:')
+
+        # Hint: typo in the leading verb
+        first_token = line.split(' ', 1)[0]
+        if first_token and first_token not in self._known_verbs:
+            closest = difflib.get_close_matches(first_token, self._known_verbs, n=1, cutoff=0.78)
+            if closest:
+                corrected = closest[0]
+                # Preserve original casing/quotes for the remainder.
+                parts = original_trim.split(None, 1)
+                original_remainder = parts[1] if len(parts) == 2 else ''
+                if original_remainder:
+                    suggestions.append(f"{corrected.capitalize()} {original_remainder}")
+                else:
+                    suggestions.append(corrected.capitalize())
+
+        # General template matching against common statements
+        scored: List[Tuple[float, str]] = []
+        # Remove placeholders for matching
+        comparable_line = re.sub(r'[^a-z0-9 :]+', '', line)
+        for template in self._suggestion_templates:
+            comparable_template = template.lower()
+            comparable_template = re.sub(r'<[^>]+>', '', comparable_template)
+            comparable_template = re.sub(r'\s+', ' ', comparable_template).strip()
+            ratio = difflib.SequenceMatcher(None, comparable_line, comparable_template).ratio()
+            scored.append((ratio, template))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        for ratio, template in scored[:3]:
+            if ratio >= 0.55 and template not in suggestions:
+                suggestions.append(template)
+
+        # Limit output to avoid noisy error stacks
+        return suggestions[:3]
     
     def _parse_simple_statement(self, line: str, action_type: str, match) -> Optional[ASTNode]:
         """Parse non-block statements"""

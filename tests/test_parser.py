@@ -163,6 +163,28 @@ Display x.
         assert len(ast.statements) == 2
         assert isinstance(ast.statements[0], AssignmentNode)
         assert isinstance(ast.statements[1], OutputNode)
+
+    def test_unknown_statement_has_suggestions_for_typos(self):
+        code = 'Dispaly "Hello".'
+        _ = self.parser.parse(code)
+
+        assert self.parser.errors
+        # Should include at least one suggestion line.
+        assert any('Did you mean' in e for e in self.parser.errors)
+        # Should suggest the corrected verb.
+        assert any('Display "Hello"' in e or 'Display "Hello"' in e.replace('?', '') for e in self.parser.errors)
+
+    def test_unknown_statement_has_suggestions_for_missing_colon(self):
+        code = """
+Set x to 1.
+If x is equal to 1
+  Display "yes".
+        """
+        _ = self.parser.parse(code)
+
+        assert self.parser.errors
+        assert any('Did you mean' in e for e in self.parser.errors)
+        assert any('If <condition>:' in e for e in self.parser.errors)
     
     def test_file_operations(self):
         """Test parsing file I/O"""

@@ -12,11 +12,12 @@ from rich.markdown import Markdown
 from .parser import VyraParser
 from .logic_graph import LogicGraph
 from .interpreter import VyraInterpreter
+from .ai_rewriter import rewrite_source, AiRewriteError, AiRewriteConfig
 
 console = Console()
 
 
-def run_file(filepath: str, debug: bool = False, visualize: bool = False):
+def run_file(filepath: str, debug: bool = False, visualize: bool = False, ai: bool = False):
     """Run a Vyra file"""
     try:
         # Read source code
@@ -25,6 +26,15 @@ def run_file(filepath: str, debug: bool = False, visualize: bool = False):
         
         console.print(f"\n[bold cyan]Running:[/bold cyan] {filepath}\n")
         
+        # Optional AI rewrite (disabled by default)
+        if ai:
+            console.print("[yellow]🧠 AI rewrite...[/yellow]")
+            try:
+                source_code, _info = rewrite_source(source_code, config=AiRewriteConfig(enabled=True))
+            except AiRewriteError as e:
+                console.print(f"[bold red]❌ AI Rewrite Error:[/bold red] {e}")
+                return 1
+
         # Parse
         console.print("[yellow]📝 Parsing...[/yellow]")
         parser = VyraParser()
@@ -78,7 +88,7 @@ def run_file(filepath: str, debug: bool = False, visualize: bool = False):
         return 1
 
 
-def repl():
+def repl(ai: bool = False):
     """Interactive REPL for Vyra"""
     console.print(Panel.fit(
         "[bold cyan]Vyra REPL[/bold cyan]\n"
@@ -165,6 +175,13 @@ def repl():
             
             # Parse and execute
             try:
+                if ai:
+                    try:
+                        full_code, _info = rewrite_source(full_code, config=AiRewriteConfig(enabled=True))
+                    except AiRewriteError as e:
+                        console.print(f"[red]AI Rewrite Error: {e}[/red]")
+                        continue
+
                 ast = parser.parse(full_code)
                 
                 if parser.errors:
@@ -193,11 +210,18 @@ def repl():
             break
 
 
-def parse_only(filepath: str, output: str = None):
+def parse_only(filepath: str, output: str = None, ai: bool = False):
     """Parse file and output AST"""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             source_code = f.read()
+
+        if ai:
+            try:
+                source_code, _info = rewrite_source(source_code, config=AiRewriteConfig(enabled=True))
+            except AiRewriteError as e:
+                console.print(f"[bold red]AI Rewrite Error:[/bold red] {e}")
+                return 1
         
         parser = VyraParser()
         ast = parser.parse(source_code)
@@ -251,14 +275,17 @@ Examples:
     run_parser.add_argument('file', help='Vyra source file (.intent)')
     run_parser.add_argument('-d', '--debug', action='store_true', help='Enable debug output')
     run_parser.add_argument('-v', '--viz', action='store_true', help='Visualize logic graph')
+    run_parser.add_argument('--ai', action='store_true', help='Enable optional AI rewrite (requires VYRA_AI_URL and VYRA_AI_MODEL)')
     
     # REPL command
-    subparsers.add_parser('repl', help='Start interactive REPL')
+    repl_parser = subparsers.add_parser('repl', help='Start interactive REPL')
+    repl_parser.add_argument('--ai', action='store_true', help='Enable optional AI rewrite (requires VYRA_AI_URL and VYRA_AI_MODEL)')
     
     # Parse command
     parse_parser = subparsers.add_parser('parse', help='Parse file and output graph')
     parse_parser.add_argument('file', help='Vyra source file')
     parse_parser.add_argument('-o', '--output', help='Output file for graph JSON')
+    parse_parser.add_argument('--ai', action='store_true', help='Enable optional AI rewrite (requires VYRA_AI_URL and VYRA_AI_MODEL)')
     
     args = parser.parse_args()
     
@@ -267,14 +294,14 @@ Examples:
         return 1
     
     if args.command == 'run':
-        return run_file(args.file, debug=args.debug, visualize=args.viz)
+        return run_file(args.file, debug=args.debug, visualize=args.viz, ai=args.ai)
     
     elif args.command == 'repl':
-        repl()
+        repl(ai=getattr(args, 'ai', False))
         return 0
     
     elif args.command == 'parse':
-        return parse_only(args.file, args.output)
+        return parse_only(args.file, args.output, ai=args.ai)
     
     return 0
 

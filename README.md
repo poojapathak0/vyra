@@ -43,6 +43,20 @@ pip install -r requirements.txt
 python -m vyra run examples/hello.intent
 ```
 
+### Optional: AI Rewrite Mode (off by default)
+
+Vyra can optionally send your source to an external LLM to rewrite "free-form English" into canonical Vyra code *before* parsing.
+
+- Enable per command: `vyra run --ai program.intent`, `vyra parse --ai program.intent`, or `vyra repl --ai`
+- Configure via environment variables:
+     - `VYRA_AI_URL` = OpenAI-compatible Chat Completions endpoint URL
+     - `VYRA_AI_MODEL` = model name
+     - `VYRA_AI_API_KEY` = optional (required by many hosted APIs)
+     - `VYRA_AI_PROVIDER` = `openai_compatible` (default)
+     - `VYRA_AI_TIMEOUT` = request timeout seconds (default 30)
+
+If `--ai` is enabled but the required variables are missing, Vyra prints an AI rewrite error and exits.
+
 ### Interactive REPL
 
 ```bash
