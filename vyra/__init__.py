@@ -1,10 +1,7 @@
-"""
-IntentLang - Natural Language Programming Language
-Core package initialization
-"""
+"""Vyra - Natural Language Programming Language"""
 
 __version__ = "1.0.0"
-__author__ = "IntentLang Contributors"
+__author__ = "Vyra Contributors"
 __license__ = "MIT"
 
 from .parser import IntentParser

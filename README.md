@@ -130,11 +130,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [ ] Real-time collaboration
 - [ ] Blockchain integration
 
-## 💬 Community
 
-- Discord: [Join our server](#)
-- Twitter: [@IntentLang](#)
-- Stack Overflow: [intentlang tag](#)
 
 ---
 
