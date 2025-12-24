@@ -61,7 +61,7 @@ If `--ai` is enabled but the required variables are missing, Vyra prints an AI r
 
 ```bash
 python -m vyra repl
-```  
+``` 
 
 ## 📚 Documentation
 
