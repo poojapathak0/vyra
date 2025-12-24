@@ -1,8 +1,8 @@
-# 🚀 IntentLang - Programming in Plain English
+# 🚀 Vyra - Programming in Plain English
 
-**IntentLang** is a revolutionary programming language where you write code in natural, human-readable English sentences. No syntax to memorize, no semicolons, no braces—just pure intent.
+**Vyra** is a programming language where you write code in natural, human-readable English sentences.
 
-## ✨ Why IntentLang?
+## ✨ Why Vyra?
 
 - **Zero Syntax Barriers**: Write code like you think
 - **Blazing Fast**: Compiles to native code, performs like C++
@@ -12,7 +12,7 @@
 
 ## 🎯 Example
 
-```intentlang
+```vyra
 Ask the user for their name and store it in username.
 Display "Hello, " followed by username followed by "!".
 Ask the user for two numbers called a and b.
@@ -42,13 +42,13 @@ pip install -r requirements.txt
 ### Run Your First Program
 
 ```bash
-python -m intentlang run examples/hello.intent
+python -m vyra run examples/hello.intent
 ```
 
 ### Interactive REPL
 
 ```bash
-python -m intentlang repl
+python -m vyra repl
 ```
 
 ## 📚 Documentation
@@ -107,7 +107,7 @@ Features:
 
 ## ⚡ Performance
 
-IntentLang aims for near-C++ performance:
+Vyra aims for near-C++ performance:
 - **Fibonacci(35)**: ~2x slower than C++ (optimized)
 - **Matrix operations**: ~1.5x slower than NumPy
 - **Web serving**: Comparable to Node.js
@@ -134,6 +134,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-**Made with ❤️ by the IntentLang community**
+**Made with ❤️ by the Vyra community**
 
 *Transform your ideas into code at the speed of thought.*

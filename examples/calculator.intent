@@ -1,7 +1,7 @@
 # Interactive Calculator
 # Demonstrates user input, arithmetic, and conditionals
 
-Display "=== IntentLang Calculator ===".
+Display "=== Vyra Calculator ===".
 Display "".
 
 Ask the user for a number called a.
@@ -36,4 +36,4 @@ If choice is equal to 4:
     Display "Result: " followed by the value of a followed by " ÷ " followed by the value of b followed by " = " followed by the value of result.
 
 Display "".
-Display "Thank you for using IntentLang Calculator!".
+Display "Thank you for using Vyra Calculator!".

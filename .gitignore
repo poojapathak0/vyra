@@ -41,7 +41,7 @@ ENV/
 htmlcov/
 .tox/
 
-# IntentLang specific
+# Vyra specific
 *.intent.cache
 *.intent.compiled
 graph_output/

@@ -1,14 +1,12 @@
-"""
-Unit tests for IntentLang parser
-"""
+"""Unit tests for Vyra parser."""
 
 import pytest
-from intentlang.parser import IntentParser
-from intentlang.ast_nodes import *
+from vyra.parser import IntentParser
+from vyra.ast_nodes import *
 
 
 class TestParser:
-    """Test the IntentLang parser"""
+    """Test the Vyra parser"""
     
     def setup_method(self):
         self.parser = IntentParser()

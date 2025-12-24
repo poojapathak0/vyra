@@ -1,6 +1,6 @@
-# IntentLang Tutorial
+# Vyra Tutorial
 
-Welcome to IntentLang! This tutorial will teach you how to write code in plain English.
+Welcome to Vyra! This tutorial will teach you how to write code in plain English.
 
 ## Table of Contents
 
@@ -21,20 +21,20 @@ Create a new file with the `.intent` extension (e.g., `myprogram.intent`) and st
 
 ### Your First Program
 
-```intentlang
+```vyra
 Display "Hello, World!".
 ```
 
 Run it:
 ```bash
-python -m intentlang run myprogram.intent
+python -m vyra run myprogram.intent
 ```
 
 ## Basic Concepts
 
 ### Sentences as Code
 
-Every statement in IntentLang is a sentence. Each sentence:
+Every statement in Vyra is a sentence. Each sentence:
 - Starts with an action verb (Display, Set, Ask, etc.)
 - Ends with a period (`.`)
 - Reads like an instruction to a human
@@ -43,7 +43,7 @@ Every statement in IntentLang is a sentence. Each sentence:
 
 Add comments to explain your code:
 
-```intentlang
+```vyra
 # This is a single-line comment
 
 Note: This is also a comment!
@@ -55,7 +55,7 @@ Display "Hello".  # Comments can go at the end too
 
 ### Creating Variables
 
-```intentlang
+```vyra
 Set x to 5.
 Create a variable called name with value "Alice".
 Define age as 25.
@@ -71,7 +71,7 @@ Use descriptive names:
 
 ### Output (Displaying)
 
-```intentlang
+```vyra
 Display "Hello!".
 Show the value of x.
 Print "The result is: " followed by result.
@@ -79,7 +79,7 @@ Print "The result is: " followed by result.
 
 ### Input (Asking)
 
-```intentlang
+```vyra
 Ask the user for their name.
 Get a number from the user and store it in age.
 Prompt for password without showing it.
@@ -89,7 +89,7 @@ Prompt for password without showing it.
 
 ### Basic Operations
 
-```intentlang
+```vyra
 Add 5 and 10 and store the result in sum.
 Multiply a and b and store the result in product.
 
@@ -101,7 +101,7 @@ Divide amount by 4.
 
 ### Increment and Decrement
 
-```intentlang
+```vyra
 Increment counter.
 Decrement remaining.
 ```
@@ -110,14 +110,14 @@ Decrement remaining.
 
 ### If Statements
 
-```intentlang
+```vyra
 If age is greater than 18:
   Display "Adult".
 ```
 
 ### If-Else
 
-```intentlang
+```vyra
 If temperature is greater than 30:
   Display "Hot day!".
 Otherwise:
@@ -126,7 +126,7 @@ Otherwise:
 
 ### Nested Conditions
 
-```intentlang
+```vyra
 If score is greater than or equal to 90:
   Display "Grade: A".
 Otherwise if score is greater than or equal to 80:
@@ -150,14 +150,14 @@ Otherwise:
 
 ### Repeat N Times
 
-```intentlang
+```vyra
 Repeat 10 times:
   Display "Hello".
 ```
 
 ### While Loop
 
-```intentlang
+```vyra
 Set i to 1.
 While i is less than or equal to 5:
   Display the value of i.
@@ -166,7 +166,7 @@ While i is less than or equal to 5:
 
 ### For-Each Loop
 
-```intentlang
+```vyra
 Create a list called items with values [1, 2, 3, 4, 5].
 For each item in items:
   Display item.
@@ -174,7 +174,7 @@ For each item in items:
 
 ### Loop Control
 
-```intentlang
+```vyra
 While true:
   Ask the user for input called cmd.
   If cmd equals "quit":
@@ -186,21 +186,21 @@ While true:
 
 ### Creating Lists
 
-```intentlang
+```vyra
 Create a list called numbers with values [1, 2, 3].
 Create an empty list called items.
 ```
 
 ### Adding to Lists
 
-```intentlang
+```vyra
 Add 42 to numbers.
 Append value to items.
 ```
 
 ### Processing Lists
 
-```intentlang
+```vyra
 For each num in numbers:
   Multiply num by 2 and store in doubled.
   Display doubled.
@@ -210,7 +210,7 @@ For each num in numbers:
 
 ### Defining Functions
 
-```intentlang
+```vyra
 Create function greet that takes name:
   Display "Hello, " followed by name followed by "!".
 
@@ -221,7 +221,7 @@ Define function add with parameters a and b:
 
 ### Calling Functions
 
-```intentlang
+```vyra
 Call greet with "Alice".
 Call add with 5 and 10 and store in sum.
 ```
@@ -230,15 +230,15 @@ Call add with 5 and 10 and store in sum.
 
 ### Reading Files
 
-```intentlang
+```vyra
 Read file "data.txt" into content.
 Display the value of content.
 ```
 
 ### Writing Files
 
-```intentlang
-Set message to "Hello from IntentLang!".
+```vyra
+Set message to "Hello from Vyra!".
 Write message to file "output.txt".
 ```
 
@@ -246,7 +246,7 @@ Write message to file "output.txt".
 
 ### 1. Use Descriptive Names
 
-```intentlang
+```vyra
 # Good
 Set user_age to 25.
 Set total_price to 99.99.
@@ -258,7 +258,7 @@ Set t to 99.99.
 
 ### 2. Add Comments
 
-```intentlang
+```vyra
 # Calculate the average of three numbers
 Add num1 and num2 and store in sum.
 Add sum and num3 and store in total.
@@ -267,7 +267,7 @@ Divide total by 3 and store in average.
 
 ### 3. Break Down Complex Logic
 
-```intentlang
+```vyra
 # Instead of complex nested conditions, use clear steps:
 
 # Step 1: Check age category
@@ -285,7 +285,7 @@ If category equals "child":
 
 ### 4. Handle Edge Cases
 
-```intentlang
+```vyra
 Ask the user for a divisor called divisor.
 
 If divisor is equal to 0:
@@ -299,7 +299,7 @@ Otherwise:
 
 ### Input Validation
 
-```intentlang
+```vyra
 Set valid to false.
 While valid is equal to false:
   Ask the user for age called age.
@@ -311,7 +311,7 @@ While valid is equal to false:
 
 ### Menu System
 
-```intentlang
+```vyra
 Display "Menu:".
 Display "1. Option A".
 Display "2. Option B".
@@ -329,7 +329,7 @@ If choice equals 3:
 
 ### Accumulator Pattern
 
-```intentlang
+```vyra
 Set sum to 0.
 For each number in numbers:
   Add number to sum.

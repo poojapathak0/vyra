@@ -5,7 +5,7 @@ Display "=== File I/O Demo ===".
 Display "".
 
 # Create some text content
-Set content to "Hello from IntentLang!".
+Set content to "Hello from Vyra!".
 Set content to content followed by " This is a test file.".
 
 Display "Writing to file...".

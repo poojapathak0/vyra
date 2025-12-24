@@ -1,6 +1,6 @@
-"""
-IntentLang Interpreter - Executes logic graphs
-Traverses the graph and executes operations with proper state management
+"""Vyra Interpreter - Executes logic graphs.
+
+Traverses the graph and executes operations with proper state management.
 """
 
 import sys
@@ -67,7 +67,7 @@ class ExecutionContext:
 
 class IntentInterpreter:
     """
-    Interpreter for IntentLang logic graphs
+    Interpreter for Vyra logic graphs
     Executes programs by traversing the graph and maintaining execution state
     """
     

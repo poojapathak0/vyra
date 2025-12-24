@@ -1,14 +1,14 @@
-"""
-Integration tests for IntentLang
-Tests complete programs from parsing to execution
+"""Integration tests for Vyra.
+
+Tests complete programs from parsing to execution.
 """
 
 import pytest
 from io import StringIO
 import sys
-from intentlang.parser import IntentParser
-from intentlang.logic_graph import LogicGraph
-from intentlang.interpreter import IntentInterpreter
+from vyra.parser import IntentParser
+from vyra.logic_graph import LogicGraph
+from vyra.interpreter import IntentInterpreter
 
 
 class TestIntegration:

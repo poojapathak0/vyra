@@ -1,8 +1,8 @@
-# IntentLang Language Specification v1.0
+# Vyra Language Specification v1.0
 
 ## Overview
 
-IntentLang is a natural language programming language that allows developers to write code using plain English sentences. This document defines the formal grammar, semantics, and execution model.
+Vyra is a natural language programming language that allows developers to write code using plain English sentences. This document defines the formal grammar, semantics, and execution model.
 
 ## Design Principles
 
@@ -16,7 +16,7 @@ IntentLang is a natural language programming language that allows developers to 
 
 ### Sentence Structure
 
-Every statement in IntentLang follows patterns:
+Every statement in Vyra follows patterns:
 
 ```
 <Action> [<Object>] [<Preposition> <Target>] [<Condition>].
@@ -334,7 +334,7 @@ Display "Done!".
 Import web framework.
 Create a web server on port 8080.
 Define route "/" with handler:
-  Return "Welcome to IntentLang!".
+  Return "Welcome to Vyra!".
 Define route "/api/greet" with handler that takes name parameter:
   Return "Hello, " followed by name.
 Start the server and display "Server running on port 8080".

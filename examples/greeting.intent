@@ -1,7 +1,7 @@
 # User Greeting Program
 # Demonstrates variables, input, and string concatenation
 
-Display "Welcome to IntentLang!".
+Display "Welcome to Vyra!".
 Display "".
 
 Ask the user for their name and store it in username.

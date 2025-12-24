@@ -1,7 +1,4 @@
-"""
-IntentLang CLI - Command-line interface
-Provides commands to run, debug, and visualize IntentLang programs
-"""
+"""Vyra CLI - Command-line interface"""
 
 import sys
 import os
@@ -20,7 +17,7 @@ console = Console()
 
 
 def run_file(filepath: str, debug: bool = False, visualize: bool = False):
-    """Run an IntentLang file"""
+    """Run a Vyra file"""
     try:
         # Read source code
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -82,9 +79,9 @@ def run_file(filepath: str, debug: bool = False, visualize: bool = False):
 
 
 def repl():
-    """Interactive REPL for IntentLang"""
+    """Interactive REPL for Vyra"""
     console.print(Panel.fit(
-        "[bold cyan]IntentLang REPL[/bold cyan]\n"
+        "[bold cyan]Vyra REPL[/bold cyan]\n"
         "Write code in plain English!\n"
         "Type 'exit' or 'quit' to leave, 'help' for commands.",
         border_style="cyan"
@@ -114,7 +111,7 @@ def repl():
             
             if not line_buffer and line.lower() == 'help':
                 console.print("""
-[bold cyan]IntentLang REPL Commands:[/bold cyan]
+[bold cyan]Vyra REPL Commands:[/bold cyan]
   exit, quit     - Exit the REPL
   help           - Show this help message
   clear          - Clear the screen
@@ -234,24 +231,24 @@ def parse_only(filepath: str, output: str = None):
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
-        description="IntentLang - Programming in Plain English",
+        description="Vyra - Programming in Plain English",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  intentlang run program.intent              Run a program
-  intentlang run --debug program.intent      Run with debug output
-  intentlang run --viz program.intent        Run and visualize graph
-  intentlang repl                            Start interactive REPL
-  intentlang parse program.intent            Parse and show graph
-  intentlang parse -o graph.json program     Export graph to JSON
+    vyra run program.intent              Run a program
+    vyra run --debug program.intent      Run with debug output
+    vyra run --viz program.intent        Run and visualize graph
+    vyra repl                            Start interactive REPL
+    vyra parse program.intent            Parse and show graph
+    vyra parse -o graph.json program     Export graph to JSON
         """
     )
     
     subparsers = parser.add_subparsers(dest='command', help='Command to execute')
     
     # Run command
-    run_parser = subparsers.add_parser('run', help='Run an IntentLang program')
-    run_parser.add_argument('file', help='IntentLang source file (.intent)')
+    run_parser = subparsers.add_parser('run', help='Run a Vyra program')
+    run_parser.add_argument('file', help='Vyra source file (.intent)')
     run_parser.add_argument('-d', '--debug', action='store_true', help='Enable debug output')
     run_parser.add_argument('-v', '--viz', action='store_true', help='Visualize logic graph')
     
@@ -260,7 +257,7 @@ Examples:
     
     # Parse command
     parse_parser = subparsers.add_parser('parse', help='Parse file and output graph')
-    parse_parser.add_argument('file', help='IntentLang source file')
+    parse_parser.add_argument('file', help='Vyra source file')
     parse_parser.add_argument('-o', '--output', help='Output file for graph JSON')
     
     args = parser.parse_args()

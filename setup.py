@@ -1,6 +1,4 @@
-"""
-setup.py for IntentLang
-"""
+"""setup.py for Vyra"""
 
 from setuptools import setup, find_packages
 
@@ -8,13 +6,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="intentlang",
+    name="vyra",
     version="1.0.0",
-    author="IntentLang Contributors",
+    author="Vyra Contributors",
     description="A natural language programming language",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/intentlang/intentlang",
+    url="https://github.com/YOUR_USERNAME/vyra",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -39,7 +37,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "intentlang=intentlang.__main__:main",
+            "vyra=vyra.__main__:main",
         ],
     },
 )

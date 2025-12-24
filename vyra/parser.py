@@ -1,6 +1,6 @@
-"""
-IntentLang Parser - Converts English sentences to AST
-Uses pattern matching and NLP to understand natural language code
+"""Vyra Parser - Converts English sentences to AST.
+
+Uses pattern matching and NLP-style heuristics to understand natural language code.
 """
 
 import re
@@ -147,7 +147,7 @@ class IntentParser:
     
     def parse(self, source_code: str) -> ProgramNode:
         """
-        Main entry point - parse IntentLang source code into AST
+        Main entry point - parse Vyra source code into AST
         """
         self.errors = []
         self.known_list_vars = set()

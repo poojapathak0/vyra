@@ -1,20 +1,18 @@
-"""
-Quick test script to verify IntentLang installation
-"""
+"""Quick test script to verify Vyra installation."""
 
 import sys
-from intentlang.parser import IntentParser
-from intentlang.logic_graph import LogicGraph
-from intentlang.interpreter import IntentInterpreter
+from vyra.parser import IntentParser
+from vyra.logic_graph import LogicGraph
+from vyra.interpreter import IntentInterpreter
 
 
 def test_basic():
     """Test basic functionality"""
-    print("🧪 Testing IntentLang Basic Functionality\n")
+    print("🧪 Testing Vyra Basic Functionality\n")
     
     # Test 1: Simple output
     print("Test 1: Simple Output")
-    code = 'Display "Hello, IntentLang!".'
+    code = 'Display "Hello, Vyra!".'
     
     parser = IntentParser()
     ast = parser.parse(code)
@@ -109,7 +107,7 @@ Display "Numbers: " followed by the value of numbers.
     print("✅ Test 5 passed\n")
     
     print("="*50)
-    print("🎉 All tests passed! IntentLang is working!")
+    print("🎉 All tests passed! Vyra is working!")
     print("="*50)
     return None
 

@@ -1,15 +1,15 @@
-# Contributing to IntentLang
+# Contributing to Vyra
 
-Thank you for your interest in contributing to IntentLang! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Vyra! This document provides guidelines for contributing to the project.
 
 ## 🌟 Ways to Contribute
 
 - **Report Bugs**: Found a bug? Open an issue!
 - **Suggest Features**: Have an idea? We'd love to hear it!
-- **Write Documentation**: Help others learn IntentLang
+- **Write Documentation**: Help others learn Vyra
 - **Submit Code**: Fix bugs or implement features
 - **Create Examples**: Share cool programs you've written
-- **Spread the Word**: Tell others about IntentLang
+- **Spread the Word**: Tell others about Vyra
 
 ## 🚀 Getting Started
 
@@ -20,8 +20,8 @@ Click the "Fork" button on GitHub to create your own copy.
 ### 2. Clone Your Fork
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/intentlang.git
-cd intentlang
+git clone https://github.com/YOUR_USERNAME/vyra.git
+cd vyra
 ```
 
 ### 3. Set Up Development Environment
@@ -54,7 +54,7 @@ git checkout -b feature/my-awesome-feature
 pytest
 
 # Run with coverage
-pytest --cov=intentlang --cov-report=html
+pytest --cov=vyra --cov-report=html
 
 # Run specific test file
 pytest tests/test_parser.py
@@ -69,13 +69,13 @@ We use `black` for code formatting and `flake8` for linting:
 
 ```bash
 # Format code
-black intentlang/ tests/
+black vyra/ tests/
 
 # Check linting
-flake8 intentlang/ tests/
+flake8 vyra/ tests/
 
 # Type checking
-mypy intentlang/
+mypy vyra/
 ```
 
 ### Testing Your Changes
@@ -88,15 +88,15 @@ Before submitting, ensure:
 4. Add tests for new features
 5. Update documentation as needed
 
-### Running IntentLang Programs
+### Running Vyra Programs
 
 ```bash
 # Test your changes with example programs
-python -m intentlang run examples/hello.intent
-python -m intentlang run examples/calculator.intent
+python -m vyra run examples/hello.intent
+python -m vyra run examples/calculator.intent
 
 # Try the REPL
-python -m intentlang repl
+python -m vyra repl
 ```
 
 ## 🎯 Contribution Guidelines
@@ -199,7 +199,7 @@ What you expected to happen.
 What actually happened.
 
 **Code sample**
-```intentlang
+```vyra
 # Minimal code that reproduces the issue
 Display "Hello".
 ```
@@ -207,7 +207,7 @@ Display "Hello".
 **Environment:**
 - OS: [e.g., Windows 10, Ubuntu 20.04]
 - Python version: [e.g., 3.10.5]
-- IntentLang version: [e.g., 1.0.0]
+- Vyra version: [e.g., 1.0.0]
 
 **Additional context**
 Any other relevant information.
@@ -225,7 +225,7 @@ A clear description of the problem.
 How should the feature work?
 
 **Example usage**
-```intentlang
+```vyra
 # Show how the feature would be used
 ```
 
@@ -239,7 +239,7 @@ Screenshots, mockups, related features, etc.
 ## 🏗️ Architecture Overview
 
 ```
-intentlang/
+vyra/
 ├── __init__.py          # Package initialization
 ├── __main__.py          # CLI entry point
 ├── parser.py            # English → AST parser
@@ -345,8 +345,8 @@ We pledge to make participation in our project a harassment-free experience for 
 
 - **Discord**: Join our community server
 - **GitHub Discussions**: Ask questions and share ideas
-- **Email**: contact@intentlang.org
-- **Stack Overflow**: Tag your questions with `intentlang`
+- **Email**: contact@vyra.org
+- **Stack Overflow**: Tag your questions with `vyra`
 
 ## 🙏 Recognition
 
@@ -355,7 +355,7 @@ Contributors will be:
 - Mentioned in release notes
 - Credited in documentation
 
-Thank you for helping make IntentLang better! 🎉
+Thank you for helping make Vyra better! 🎉
 
 ---
 

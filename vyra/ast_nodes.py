@@ -1,6 +1,6 @@
-"""
-AST Node Definitions for IntentLang
-These nodes represent the abstract syntax tree after parsing
+"""AST Node Definitions for Vyra.
+
+These nodes represent the abstract syntax tree after parsing.
 """
 
 from dataclasses import dataclass, field

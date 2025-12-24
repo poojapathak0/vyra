@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to IntentLang will be documented in this file.
+All notable changes to Vyra will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-12-24
 
 ### Added
-- Initial release of IntentLang
+- Initial release of Vyra
 - Natural language programming syntax
 - Core language features:
   - Variables and assignments
@@ -69,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Multi-language support (Spanish, French, etc.)
 - GPU acceleration support
 - Real-time collaboration features
-- Package manager for IntentLang libraries
+- Package manager for Vyra libraries
 - Debugging tools with breakpoints
 - Performance profiler
 - Code formatter/beautifier
@@ -79,4 +79,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[1.0.0]: https://github.com/intentlang/intentlang/releases/tag/v1.0.0
+[1.0.0]: https://github.com/YOUR_ORG/vyra/releases/tag/v1.0.0

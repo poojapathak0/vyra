@@ -1,30 +1,30 @@
-# IntentLang Quick Reference
+# Vyra Quick Reference
 
 ## Basic Syntax
 
 ### Variables
-```intentlang
+```vyra
 Set x to 5.
 Create a variable called name with value "Alice".
 Store 10 in count.
 ```
 
 ### Output
-```intentlang
+```vyra
 Display "Hello".
 Show the value of x.
 Print result followed by " items".
 ```
 
 ### Input
-```intentlang
+```vyra
 Ask the user for their name.
 Get a number from the user and store it in age.
 ```
 
 ## Arithmetic
 
-```intentlang
+```vyra
 Add 5 and 10 and store the result in sum.
 Multiply a and b and store the result in product.
 Add 3 to x.
@@ -35,7 +35,7 @@ Decrement remaining.
 
 ## Conditionals
 
-```intentlang
+```vyra
 If x is greater than 10:
   Display "Big".
 Otherwise:
@@ -53,32 +53,32 @@ Otherwise:
 ## Loops
 
 ### Repeat N Times
-```intentlang
+```vyra
 Repeat 10 times:
   Display "Hello".
 ```
 
 ### While Loop
-```intentlang
+```vyra
 While x is less than 100:
   Multiply x by 2.
 ```
 
 ### For-Each Loop
-```intentlang
+```vyra
 For each item in list:
   Display item.
 ```
 
 ### Loop Control
-```intentlang
+```vyra
 Stop the loop.
 Continue to next iteration.
 ```
 
 ## Lists
 
-```intentlang
+```vyra
 Create a list called numbers with values [1, 2, 3].
 Add item to list.
 For each num in numbers:
@@ -87,7 +87,7 @@ For each num in numbers:
 
 ## Functions
 
-```intentlang
+```vyra
 Create function greet that takes name:
   Display "Hello, " followed by name.
 
@@ -96,14 +96,14 @@ Call greet with "Alice".
 
 ## File I/O
 
-```intentlang
+```vyra
 Read file "data.txt" into content.
 Write text to file "output.txt".
 ```
 
 ## Comments
 
-```intentlang
+```vyra
 # Single-line comment
 Note: This is also a comment.
 ```
@@ -119,25 +119,25 @@ Note: This is also a comment.
 
 ```bash
 # Run a program
-python -m intentlang run program.intent
+python -m vyra run program.intent
 
 # Start REPL
-python -m intentlang repl
+python -m vyra repl
 
 # Debug mode
-python -m intentlang run --debug program.intent
+python -m vyra run --debug program.intent
 
 # Visualize graph
-python -m intentlang run --viz program.intent
+python -m vyra run --viz program.intent
 
 # Parse only
-python -m intentlang parse program.intent
+python -m vyra parse program.intent
 ```
 
 ## Common Patterns
 
 ### Input Validation
-```intentlang
+```vyra
 Set valid to false.
 While valid is equal to false:
   Ask the user for age called age.
@@ -148,14 +148,14 @@ While valid is equal to false:
 ```
 
 ### Accumulator
-```intentlang
+```vyra
 Set sum to 0.
 For each num in numbers:
   Add num to sum.
 ```
 
 ### Counter Loop
-```intentlang
+```vyra
 Set i to 1.
 While i is less than or equal to 10:
   Display i.
@@ -163,7 +163,7 @@ While i is less than or equal to 10:
 ```
 
 ### Error Handling
-```intentlang
+```vyra
 If divisor is equal to 0:
   Display "Error: Cannot divide by zero!".
 Otherwise:

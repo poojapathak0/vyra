@@ -1,8 +1,8 @@
 #!/bin/bash
-# IntentLang Setup Script for Linux/Mac
+# Vyra Setup Script for Linux/Mac
 
 echo "================================"
-echo " IntentLang Setup"
+echo " Vyra Setup"
 echo "================================"
 echo ""
 
@@ -39,6 +39,6 @@ echo "Activate the virtual environment with:"
 echo "  source venv/bin/activate"
 echo ""
 echo "Try these commands:"
-echo "  python -m intentlang run examples/hello.intent"
-echo "  python -m intentlang repl"
+echo "  python -m vyra run examples/hello.intent"
+echo "  python -m vyra repl"
 echo ""

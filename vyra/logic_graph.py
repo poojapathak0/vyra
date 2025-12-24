@@ -1,6 +1,6 @@
-"""
-Logic Graph - Intermediate Representation for IntentLang
-Converts AST to a deterministic control flow graph for execution
+"""Logic Graph - Intermediate Representation for Vyra.
+
+Converts AST to a deterministic control flow graph for execution.
 """
 
 import json
@@ -138,7 +138,7 @@ class LogicGraph:
                 edge_color='gray',
                 arrowstyle='->')
         
-        plt.title("IntentLang Logic Graph", fontsize=16, fontweight='bold')
+        plt.title("Vyra Logic Graph", fontsize=16, fontweight='bold')
         plt.tight_layout()
         
         if output_file:

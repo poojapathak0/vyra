@@ -1,11 +1,11 @@
-"""Function tests for IntentLang"""
+"""Function tests for Vyra"""
 
 import sys
 from io import StringIO
 
-from intentlang.parser import IntentParser
-from intentlang.logic_graph import LogicGraph
-from intentlang.interpreter import IntentInterpreter
+from vyra.parser import IntentParser
+from vyra.logic_graph import LogicGraph
+from vyra.interpreter import IntentInterpreter
 
 
 class TestFunctions:

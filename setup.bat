@@ -1,7 +1,7 @@
 @echo off
-REM IntentLang Setup Script for Windows
+REM Vyra Setup Script for Windows
 echo ================================
-echo  IntentLang Setup
+echo  Vyra Setup
 echo ================================
 echo.
 
@@ -22,7 +22,7 @@ echo [2/4] Installing dependencies...
 pip install -r requirements.txt
 
 echo.
-echo [3/4] Installing IntentLang...
+echo [3/4] Installing Vyra...
 pip install -e .
 
 echo.
@@ -35,7 +35,7 @@ echo  Setup Complete!
 echo ================================
 echo.
 echo Try these commands:
-echo   python -m intentlang run examples\hello.intent
-echo   python -m intentlang repl
+echo   python -m vyra run examples\hello.intent
+echo   python -m vyra repl
 echo.
 pause

@@ -1,4 +1,4 @@
-# IntentLang Roadmap
+# Vyra Roadmap
 
 ## Vision
 
@@ -73,7 +73,7 @@ Make programming accessible to everyone through natural language, while maintain
 - [ ] Mobile-responsive design
 
 ### Package Manager
-- [ ] `intent install` command
+- [ ] `vyra install` command
 - [ ] Central package registry
 - [ ] Version management
 - [ ] Dependency resolution
@@ -159,7 +159,7 @@ Make programming accessible to everyone through natural language, while maintain
 
 ### Research Areas
 - [ ] AI-assisted code generation
-- [ ] Natural language → IntentLang translation
+- [ ] Natural language → Vyra translation
 - [ ] Code optimization via ML
 - [ ] Automatic bug fixing
 - [ ] Program synthesis from examples
@@ -171,7 +171,7 @@ Make programming accessible to everyone through natural language, while maintain
 - 50+ community-created libraries
 - Adoption in 100+ schools/universities
 - Active forum with 10,000+ members
-- Annual IntentLang conference
+- Annual Vyra conference
 
 ## Metrics
 
@@ -180,11 +180,11 @@ We'll measure success through:
 - **Performance**: Execution speed vs Python/JavaScript
 - **Quality**: Test coverage, bug reports, satisfaction
 - **Community**: Contributors, libraries, forum activity
-- **Education**: Schools using IntentLang, student feedback
+- **Education**: Schools using Vyra, student feedback
 
 ## Contributing
 
-Want to help shape the future of IntentLang? See [CONTRIBUTING.md](CONTRIBUTING.md)!
+Want to help shape the future of Vyra? See [CONTRIBUTING.md](CONTRIBUTING.md)!
 
 Areas we need help with:
 - 🔧 Core development
