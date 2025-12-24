@@ -111,14 +111,6 @@ class IntentInterpreter:
             if self.context.should_return:
                 return self.context.return_value
             
-            if self.context.should_break:
-                # Find break target
-                break
-            
-            if self.context.should_continue:
-                # Find continue target
-                self.context.should_continue = False
-            
             current_id = next_id
         
         return None
@@ -169,11 +161,9 @@ class IntentInterpreter:
             return self._execute_return(graph, node)
         
         elif node.type == 'break':
-            self.context.should_break = True
             return self._find_break_target(graph, node)
         
         elif node.type == 'continue':
-            self.context.should_continue = True
             return self._find_continue_target(graph, node)
         
         elif node.type == 'merge':
@@ -261,22 +251,24 @@ class IntentInterpreter:
         if self.debug:
             print(f"[DEBUG] If condition: {condition_value}")
         
-        # Find then and else branches
-        successors = node.successors
-        
-        if self._is_truthy(condition_value):
-            # Execute then branch - find first non-merge successor
-            for succ_id in successors:
-                succ_node = graph.nodes[succ_id]
-                if succ_node.type != 'merge':
+        truthy = self._is_truthy(condition_value)
+
+        # Follow explicit edge labels when present
+        if truthy:
+            for succ_id in node.successors:
+                edge = graph.graph[node.id][succ_id]
+                if edge.get('type') == 'then':
                     return succ_id
         else:
-            # Execute else branch or skip to merge
-            for succ_id in successors:
-                succ_node = graph.nodes[succ_id]
-                if succ_node.type == 'merge':
+            for succ_id in node.successors:
+                edge = graph.graph[node.id][succ_id]
+                if edge.get('type') == 'else':
                     return succ_id
-        
+            for succ_id in node.successors:
+                edge = graph.graph[node.id][succ_id]
+                if edge.get('type') == 'else_skip':
+                    return succ_id
+
         return self._get_next_node(graph, node)
     
     def _execute_while(self, graph: LogicGraph, node: GraphNode) -> Optional[int]:
@@ -611,14 +603,20 @@ class IntentInterpreter:
     
     def _find_break_target(self, graph: LogicGraph, node: GraphNode) -> Optional[int]:
         """Find loop exit node for break"""
-        # Look for edges with 'break_to' type
         for succ_id in node.successors:
-            return succ_id
+            edge = graph.graph[node.id][succ_id]
+            if edge.get('type') == 'break_to':
+                return succ_id
+        if node.successors:
+            return node.successors[0]
         return None
     
     def _find_continue_target(self, graph: LogicGraph, node: GraphNode) -> Optional[int]:
         """Find loop condition node for continue"""
-        # Look for edges with 'continue_to' type
         for succ_id in node.successors:
-            return succ_id
+            edge = graph.graph[node.id][succ_id]
+            if edge.get('type') == 'continue_to':
+                return succ_id
+        if node.successors:
+            return node.successors[0]
         return None

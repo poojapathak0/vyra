@@ -24,7 +24,7 @@ class IntentParser:
         
         # Operator mappings
         self.comparison_ops = {
-            'is equal to': '==', 'equals': '==', 'is': '==',
+            'is equal to': '==', 'equals': '==', 'is exactly': '==',
             'is not equal to': '!=', 'does not equal': '!=',
             'is greater than': '>', 'is more than': '>',
             'is less than': '<',
@@ -64,8 +64,10 @@ class IntentParser:
             
             # Arithmetic operations
             'arithmetic': [
-                (r'add\s+(.+)\s+(?:and\s+)?(.+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'binary_op_store'),
-                (r'(?:multiply|times)\s+(.+)\s+(?:and\s+|by\s+)?(.+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'binary_op_store'),
+                (r'add\s+(\w+)\s+and\s+(\w+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'binary_op_store'),
+                (r'(?:multiply|times)\s+(\w+)\s+(?:and\s+|by\s+)(\w+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'binary_op_store'),
+                (r'subtract\s+(\w+)\s+from\s+(\w+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'subtract_store'),
+                (r'divide\s+(\w+)\s+by\s+(\w+)\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'divide_store'),
                 (r'add\s+(.+)\s+to\s+(\w+)', 'add_to'),
                 (r'subtract\s+(.+)\s+from\s+(\w+)', 'subtract_from'),
                 (r'multiply\s+(\w+)\s+by\s+(.+)', 'multiply_by'),
@@ -261,7 +263,7 @@ class IntentParser:
                 line_number=self.current_line
             )
         
-        elif action_type in ['add_to', 'multiply_by', 'divide_by', 'subtract_from']:
+        elif action_type in ['add_to', 'multiply_by', 'divide_by', 'subtract_from', 'subtract_store', 'divide_store']:
             if action_type == 'add_to':
                 value_str = match.group(1)
                 var_name = match.group(2)
@@ -270,6 +272,44 @@ class IntentParser:
                 value_str = match.group(1)
                 var_name = match.group(2)
                 operator = '-'
+            elif action_type == 'subtract_store':
+                value_str = match.group(1)
+                var_name2 = match.group(2)
+                result_var = match.group(3)
+                var_node = VariableNode(NodeType.VARIABLE, name=var_name2)
+                value_node = self._parse_expression(value_str)
+                binary_op = BinaryOpNode(
+                    node_type=NodeType.BINARY_OP,
+                    operator='-',
+                    left=var_node,
+                    right=value_node,
+                    line_number=self.current_line
+                )
+                return AssignmentNode(
+                    node_type=NodeType.ASSIGNMENT,
+                    variable_name=result_var,
+                    value=binary_op,
+                    line_number=self.current_line
+                )
+            elif action_type == 'divide_store':
+                var_name1 = match.group(1)
+                var_name2 = match.group(2)
+                result_var = match.group(3)
+                left_node = VariableNode(NodeType.VARIABLE, name=var_name1)
+                right_node = VariableNode(NodeType.VARIABLE, name=var_name2)
+                binary_op = BinaryOpNode(
+                    node_type=NodeType.BINARY_OP,
+                    operator='/',
+                    left=left_node,
+                    right=right_node,
+                    line_number=self.current_line
+                )
+                return AssignmentNode(
+                    node_type=NodeType.ASSIGNMENT,
+                    variable_name=result_var,
+                    value=binary_op,
+                    line_number=self.current_line
+                )
             elif action_type == 'multiply_by':
                 var_name = match.group(1)
                 value_str = match.group(2)
@@ -279,8 +319,9 @@ class IntentParser:
                 value_str = match.group(2)
                 operator = '/'
             
-            var_node = VariableNode(NodeType.VARIABLE, name=var_name)
-            value_node = self._parse_expression(value_str)
+            if action_type in ['add_to', 'subtract_from', 'multiply_by', 'divide_by']:
+                var_node = VariableNode(NodeType.VARIABLE, name=var_name)
+                value_node = self._parse_expression(value_str)
             
             binary_op = BinaryOpNode(
                 node_type=NodeType.BINARY_OP,
@@ -660,8 +701,9 @@ class IntentParser:
                         operands=[left, right]
                     )
         
-        # Check for comparison operators
-        for op_phrase, op_symbol in self.comparison_ops.items():
+        # Check for comparison operators (prefer longest match)
+        for op_phrase in sorted(self.comparison_ops.keys(), key=len, reverse=True):
+            op_symbol = self.comparison_ops[op_phrase]
             if op_phrase in cond_str.lower():
                 parts = re.split(re.escape(op_phrase), cond_str, flags=re.IGNORECASE, maxsplit=1)
                 if len(parts) == 2:

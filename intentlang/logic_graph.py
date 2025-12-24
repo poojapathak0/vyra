@@ -263,28 +263,33 @@ class LogicGraphBuilder:
             'line': node.line_number
         })
         self.graph.add_edge(from_node_id, cond_node.id)
-        
-        # Create then branch
-        then_entry = cond_node.id
-        for stmt in node.then_block:
-            then_entry = self.visit(stmt, then_entry)
-        
-        # Create else branch if exists
-        else_entry = cond_node.id
-        if node.else_block:
-            for stmt in node.else_block:
-                else_entry = self.visit(stmt, else_entry)
-        
+
         # Create merge node
         merge_node = self.graph.add_node('merge', {'label': 'merge'})
-        
-        # Connect branches to merge
-        self.graph.add_edge(then_entry, merge_node.id, 'then_exit')
+
+        # THEN branch entry
+        then_entry_node = self.graph.add_node('then_entry', {'label': 'then'})
+        self.graph.add_edge(cond_node.id, then_entry_node.id, 'then')
+
+        then_last = then_entry_node.id
+        for stmt in node.then_block:
+            then_last = self.visit(stmt, then_last)
+
+        self.graph.add_edge(then_last, merge_node.id, 'then_exit')
+
+        # ELSE branch entry
         if node.else_block:
-            self.graph.add_edge(else_entry, merge_node.id, 'else_exit')
+            else_entry_node = self.graph.add_node('else_entry', {'label': 'else'})
+            self.graph.add_edge(cond_node.id, else_entry_node.id, 'else')
+
+            else_last = else_entry_node.id
+            for stmt in node.else_block:
+                else_last = self.visit(stmt, else_last)
+
+            self.graph.add_edge(else_last, merge_node.id, 'else_exit')
         else:
             self.graph.add_edge(cond_node.id, merge_node.id, 'else_skip')
-        
+
         return merge_node.id
     
     def visit_while(self, node: WhileLoopNode, from_node_id: int) -> int:
