@@ -5,6 +5,10 @@ Traverses the graph and executes operations with proper state management
 
 import sys
 import json
+import math
+import random
+import time
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 from .logic_graph import LogicGraph, GraphNode
 
@@ -72,11 +76,14 @@ class IntentInterpreter:
         self.context = ExecutionContext()
         self.max_iterations = 100000  # Prevent infinite loops
         self.iteration_count = 0
+        self.max_call_depth = 200
+        self.call_depth = 0
     
     def execute(self, graph: LogicGraph) -> Any:
         """Execute a logic graph"""
         self.context = ExecutionContext()
         self.iteration_count = 0
+        self.call_depth = 0
         
         if graph.entry_node_id is None:
             raise RuntimeError("Graph has no entry node")
@@ -384,21 +391,10 @@ class IntentInterpreter:
         
         # Evaluate arguments
         arg_values = [self._evaluate_expression(arg) for arg in args]
-        
-        # Get function definition
-        func = self.context.get_function(func_name)
-        
-        # Create new scope for function
-        self.context.push_scope()
-        
-        # Bind parameters
-        for param, value in zip(func['params'], arg_values):
-            self.context.set_variable(param, value)
-        
-        # Execute function body (simplified - would need separate graph traversal)
-        # For now, just pop scope
-        self.context.pop_scope()
-        
+
+        # Statement-form call: execute and ignore return value
+        self._call_function(func_name, arg_values)
+
         if self.debug:
             print(f"[DEBUG] Called function {func_name} with {arg_values}")
         
@@ -559,29 +555,316 @@ class IntentInterpreter:
                 return not self._is_truthy(self._evaluate_expression(operands[0]))
         
         elif expr_type == 'function_call':
-            # Handle built-in functions
             func_name = expr['function']
             args = [self._evaluate_expression(arg) for arg in expr['arguments']]
-            return self._call_builtin(func_name, args)
+            return self._call_function(func_name, args)
         
         return None
     
     def _call_builtin(self, name: str, args: List[Any]) -> Any:
         """Call built-in function"""
-        if name == 'len' or name == 'length':
+        n = (name or '').strip().lower()
+
+        # Type / basics
+        if n in ['len', 'length']:
             return len(args[0]) if args else 0
-        elif name == 'str':
+        if n in ['str', 'to_string', 'string']:
             return str(args[0]) if args else ""
-        elif name == 'int':
+        if n in ['int', 'to_int']:
             return int(args[0]) if args else 0
-        elif name == 'float':
+        if n in ['float', 'to_float']:
             return float(args[0]) if args else 0.0
-        elif name == 'abs':
+        if n == 'type_of':
+            return type(args[0]).__name__ if args else 'none'
+
+        # Math
+        if n == 'abs':
             return abs(args[0]) if args else 0
-        elif name == 'round':
+        if n == 'round':
             return round(args[0]) if args else 0
-        # Add more built-ins as needed
+        if n == 'floor':
+            return math.floor(args[0]) if args else 0
+        if n == 'ceil':
+            return math.ceil(args[0]) if args else 0
+        if n == 'sqrt':
+            return math.sqrt(args[0]) if args else 0
+        if n == 'sin':
+            return math.sin(args[0]) if args else 0
+        if n == 'cos':
+            return math.cos(args[0]) if args else 0
+        if n == 'tan':
+            return math.tan(args[0]) if args else 0
+        if n == 'log':
+            return math.log(args[0]) if args else 0
+        if n == 'exp':
+            return math.exp(args[0]) if args else 0
+
+        # String
+        if n in ['uppercase', 'upper']:
+            return str(args[0]).upper() if args else ""
+        if n in ['lowercase', 'lower']:
+            return str(args[0]).lower() if args else ""
+        if n == 'substring':
+            s = str(args[0]) if args else ""
+            start = int(args[1]) if len(args) > 1 else 0
+            end = int(args[2]) if len(args) > 2 else None
+            return s[start:end]
+        if n == 'split':
+            s = str(args[0]) if args else ""
+            sep = str(args[1]) if len(args) > 1 else None
+            return s.split(sep)
+        if n == 'join':
+            sep = str(args[0]) if args else ""
+            items = args[1] if len(args) > 1 else []
+            return sep.join([str(x) for x in items])
+        if n == 'replace':
+            s = str(args[0]) if args else ""
+            old = str(args[1]) if len(args) > 1 else ""
+            new = str(args[2]) if len(args) > 2 else ""
+            return s.replace(old, new)
+
+        # List / collections
+        if n == 'append':
+            lst = args[0] if args else []
+            val = args[1] if len(args) > 1 else None
+            if isinstance(lst, list):
+                lst.append(val)
+            return lst
+        if n == 'remove':
+            lst = args[0] if args else []
+            val = args[1] if len(args) > 1 else None
+            if isinstance(lst, list) and val in lst:
+                lst.remove(val)
+            return lst
+        if n == 'sort':
+            lst = args[0] if args else []
+            if isinstance(lst, list):
+                lst.sort()
+            return lst
+
+        # Time
+        if n == 'current_time':
+            return datetime.now().isoformat()
+        if n == 'timestamp':
+            return time.time()
+        if n == 'sleep':
+            seconds = float(args[0]) if args else 0.0
+            time.sleep(max(0.0, seconds))
+            return None
+
+        # Random
+        if n == 'random_number':
+            if len(args) >= 2:
+                return random.uniform(float(args[0]), float(args[1]))
+            return random.random()
+        if n == 'random_choice':
+            seq = args[0] if args else []
+            return random.choice(seq) if seq else None
+        if n == 'shuffle':
+            seq = args[0] if args else []
+            if isinstance(seq, list):
+                random.shuffle(seq)
+            return seq
+
         return None
+
+    def _call_function(self, name: str, args: List[Any]) -> Any:
+        """Call either a built-in or a user-defined function."""
+        # Prefer built-ins when available
+        builtin_result = self._call_builtin(name, args)
+        if builtin_result is not None or (name or '').strip().lower() in {
+            'sleep', 'append', 'remove', 'sort', 'shuffle'
+        }:
+            return builtin_result
+
+        if name not in self.context.functions:
+            raise NameError(f"Function '{name}' is not defined")
+
+        if self.call_depth >= self.max_call_depth:
+            raise RuntimeError(f"Exceeded maximum call depth ({self.max_call_depth}).")
+
+        func = self.context.get_function(name)
+        params = func.get('params', [])
+        body = func.get('body', [])
+
+        self.call_depth += 1
+        self.context.push_scope()
+        try:
+            for param, value in zip(params, args):
+                self.context.set_variable(param, value)
+
+            status, value = self._execute_serialized_statements(body)
+            if status == 'return':
+                return value
+            return None
+        finally:
+            self.context.pop_scope()
+            self.call_depth -= 1
+
+    def _execute_serialized_statements(self, statements: List[Dict]) -> tuple[str, Any]:
+        """Execute a list of serialized statements.
+
+        Returns (status, value) where status is one of: 'ok', 'return', 'break', 'continue'.
+        """
+        for stmt in statements or []:
+            status, value = self._execute_serialized_statement(stmt)
+            if status != 'ok':
+                return status, value
+        return 'ok', None
+
+    def _execute_serialized_statement(self, stmt: Dict) -> tuple[str, Any]:
+        t = (stmt or {}).get('type')
+
+        if t == 'noop' or t is None:
+            return 'ok', None
+
+        if t == 'assignment':
+            var_name = stmt['variable']
+            value = self._evaluate_expression(stmt.get('value'))
+            self.context.set_variable(var_name, value)
+            return 'ok', None
+
+        if t == 'output':
+            outputs = []
+            for expr in stmt.get('expressions', []):
+                outputs.append(str(self._evaluate_expression(expr)))
+            text = ''.join(outputs)
+            if stmt.get('newline', True):
+                print(text)
+            else:
+                print(text, end='')
+            return 'ok', None
+
+        if t == 'input':
+            prompt = stmt.get('prompt', '')
+            var = stmt.get('variable')
+            input_type = stmt.get('input_type', 'string')
+            if input_type == 'password':
+                import getpass
+                value = getpass.getpass(prompt)
+            else:
+                value = input(prompt)
+            if input_type == 'number' or (isinstance(value, str) and value.replace('.', '').replace('-', '').isdigit()):
+                try:
+                    value = float(value) if '.' in value else int(value)
+                except ValueError:
+                    pass
+            if var:
+                self.context.set_variable(var, value)
+            return 'ok', None
+
+        if t == 'function_call':
+            func_name = stmt.get('function')
+            args = [self._evaluate_expression(a) for a in stmt.get('arguments', [])]
+            self._call_function(func_name, args)
+            return 'ok', None
+
+        if t == 'return':
+            value_expr = stmt.get('value')
+            value = self._evaluate_expression(value_expr) if value_expr is not None else None
+            return 'return', value
+
+        if t == 'break':
+            return 'break', None
+
+        if t == 'continue':
+            return 'continue', None
+
+        if t == 'list_append':
+            list_expr = stmt.get('list')
+            value_expr = stmt.get('value')
+            if list_expr and list_expr.get('type') == 'variable':
+                list_var = list_expr.get('name')
+                lst = self.context.get_variable(list_var)
+                value = self._evaluate_expression(value_expr)
+                if not isinstance(lst, list):
+                    lst = []
+                    self.context.set_variable(list_var, lst)
+                lst.append(value)
+            return 'ok', None
+
+        if t == 'file_read':
+            filepath = self._evaluate_expression(stmt.get('filepath'))
+            var_name = stmt.get('variable')
+            mode = stmt.get('mode', 'text')
+            try:
+                with open(filepath, 'r') as f:
+                    content = f.read()
+                if mode == 'json':
+                    content = json.loads(content)
+                if var_name:
+                    self.context.set_variable(var_name, content)
+            except Exception as e:
+                print(f"Error reading file {filepath}: {e}")
+            return 'ok', None
+
+        if t == 'file_write':
+            filepath = self._evaluate_expression(stmt.get('filepath'))
+            content = self._evaluate_expression(stmt.get('content'))
+            mode = stmt.get('mode', 'text')
+            try:
+                with open(filepath, 'w') as f:
+                    if mode == 'json':
+                        json.dump(content, f, indent=2)
+                    else:
+                        f.write(str(content))
+            except Exception as e:
+                print(f"Error writing file {filepath}: {e}")
+            return 'ok', None
+
+        if t == 'if':
+            cond = self._evaluate_expression(stmt.get('condition'))
+            branch = stmt.get('then', []) if self._is_truthy(cond) else stmt.get('else', [])
+            return self._execute_serialized_statements(branch)
+
+        if t == 'while':
+            while self._is_truthy(self._evaluate_expression(stmt.get('condition'))):
+                self.iteration_count += 1
+                if self.iteration_count > self.max_iterations:
+                    raise RuntimeError(f"Exceeded maximum iterations ({self.max_iterations}). Possible infinite loop.")
+                status, value = self._execute_serialized_statements(stmt.get('body', []))
+                if status == 'return':
+                    return status, value
+                if status == 'break':
+                    break
+                if status == 'continue':
+                    continue
+            return 'ok', None
+
+        if t == 'repeat':
+            count = int(self._evaluate_expression(stmt.get('count')) or 0)
+            for _ in range(max(0, count)):
+                self.iteration_count += 1
+                if self.iteration_count > self.max_iterations:
+                    raise RuntimeError(f"Exceeded maximum iterations ({self.max_iterations}). Possible infinite loop.")
+                status, value = self._execute_serialized_statements(stmt.get('body', []))
+                if status == 'return':
+                    return status, value
+                if status == 'break':
+                    break
+                if status == 'continue':
+                    continue
+            return 'ok', None
+
+        if t == 'for_each':
+            iterator_name = stmt.get('iterator')
+            iterable = self._evaluate_expression(stmt.get('iterable'))
+            for item in (iterable or []):
+                self.iteration_count += 1
+                if self.iteration_count > self.max_iterations:
+                    raise RuntimeError(f"Exceeded maximum iterations ({self.max_iterations}). Possible infinite loop.")
+                self.context.set_variable(iterator_name, item)
+                status, value = self._execute_serialized_statements(stmt.get('body', []))
+                if status == 'return':
+                    return status, value
+                if status == 'break':
+                    break
+                if status == 'continue':
+                    continue
+            return 'ok', None
+
+        # Unknown statement type
+        return 'ok', None
     
     def _is_truthy(self, value: Any) -> bool:
         """Check if value is truthy"""

@@ -54,9 +54,9 @@ class IntentParser:
             'create': [
                 (r'create\s+(?:an\s+|a\s+)?list\s+called\s+(\w+)(?:\s+with\s+values?\s+(.+))?', 'create_list'),
                 (r'make\s+(?:an\s+|a\s+)?list\s+called\s+(\w+)(?:\s+with\s+values?\s+(.+))?', 'create_list'),
-                (r'create\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
-                (r'make\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
-                (r'define\s+(\w+)\s+as\s+(.+)', 'create_var'),
+                (r'create\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(?!(?:function)\b)(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
+                (r'make\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(?!(?:function)\b)(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
+                (r'define\s+(?!(?:function)\b)(\w+)\s+as\s+(.+)', 'create_var'),
             ],
             'set': [
                 (r'set\s+(\w+)\s+to\s+(.+)', 'assign'),

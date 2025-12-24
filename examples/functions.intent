@@ -1,0 +1,11 @@
+# Functions Example
+# Demonstrates user-defined functions and returning values
+
+Create function add that takes a and b:
+  Return a plus b.
+
+Set sum to call add with 2 and 3.
+Display "2 + 3 = " followed by the value of sum.
+
+Call add with 10 and 20 and store the result in total.
+Display "10 + 20 = " followed by the value of total.
