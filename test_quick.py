@@ -18,10 +18,8 @@ def test_basic():
     
     parser = IntentParser()
     ast = parser.parse(code)
-    
-    if parser.errors:
-        print(f"❌ Parser errors: {parser.errors}")
-        return False
+
+    assert not parser.errors, f"Parser errors: {parser.errors}"
     
     graph = LogicGraph()
     graph.from_ast(ast)
@@ -41,9 +39,7 @@ Display "The sum is: " followed by the value of sum.
     """
     
     ast = parser.parse(code)
-    if parser.errors:
-        print(f"❌ Parser errors: {parser.errors}")
-        return False
+    assert not parser.errors, f"Parser errors: {parser.errors}"
     
     graph = LogicGraph()
     graph.from_ast(ast)
@@ -64,9 +60,7 @@ Otherwise:
     """
     
     ast = parser.parse(code)
-    if parser.errors:
-        print(f"❌ Parser errors: {parser.errors}")
-        return False
+    assert not parser.errors, f"Parser errors: {parser.errors}"
     
     graph = LogicGraph()
     graph.from_ast(ast)
@@ -86,9 +80,7 @@ Display "Counter: " followed by the value of counter.
     """
     
     ast = parser.parse(code)
-    if parser.errors:
-        print(f"❌ Parser errors: {parser.errors}")
-        return False
+    assert not parser.errors, f"Parser errors: {parser.errors}"
     
     graph = LogicGraph()
     graph.from_ast(ast)
@@ -106,9 +98,7 @@ Display "Numbers: " followed by the value of numbers.
     """
     
     ast = parser.parse(code)
-    if parser.errors:
-        print(f"❌ Parser errors: {parser.errors}")
-        return False
+    assert not parser.errors, f"Parser errors: {parser.errors}"
     
     graph = LogicGraph()
     graph.from_ast(ast)
@@ -121,13 +111,13 @@ Display "Numbers: " followed by the value of numbers.
     print("="*50)
     print("🎉 All tests passed! IntentLang is working!")
     print("="*50)
-    return True
+    return None
 
 
 if __name__ == '__main__':
     try:
-        success = test_basic()
-        sys.exit(0 if success else 1)
+        test_basic()
+        sys.exit(0)
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback

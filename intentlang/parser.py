@@ -113,6 +113,8 @@ class IntentParser:
             'function': [
                 (r'create\s+function\s+(\w+)\s+that\s+takes\s+(.+?):', 'function_def'),
                 (r'define\s+function\s+(\w+)(?:\s+with\s+parameters?\s+(.+?))?:', 'function_def'),
+                (r'call\s+(\w+)(?:\s+with\s+(.+?))?\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'function_call_store'),
+                (r'run\s+(\w+)(?:\s+with\s+(.+?))?\s+and\s+store\s+(?:the\s+)?(?:result\s+)?in\s+(\w+)', 'function_call_store'),
                 (r'call\s+(\w+)(?:\s+with\s+(.+))?', 'function_call'),
                 (r'run\s+(\w+)(?:\s+with\s+(.+))?', 'function_call'),
                 (r'return\s+(.+)', 'return'),
@@ -431,15 +433,37 @@ class IntentParser:
                 expressions=expressions,
                 line_number=self.current_line
             )
+
+        elif action_type == 'function_call_store':
+            func_name = match.group(1)
+            args_str = match.group(2) if match.lastindex >= 2 and match.group(2) else ""
+            target_var = match.group(3)
+
+            arguments: List[ASTNode] = []
+            if args_str:
+                arg_parts = self._split_args(args_str)
+                arguments = [self._parse_expression(arg) for arg in arg_parts if arg]
+
+            return AssignmentNode(
+                node_type=NodeType.ASSIGNMENT,
+                variable_name=target_var,
+                value=FunctionCallNode(
+                    node_type=NodeType.FUNCTION_CALL,
+                    function_name=func_name,
+                    arguments=arguments,
+                    line_number=self.current_line
+                ),
+                line_number=self.current_line
+            )
         
         elif action_type == 'function_call':
             func_name = match.group(1)
             args_str = match.group(2) if match.lastindex >= 2 and match.group(2) else ""
             
-            arguments = []
+            arguments: List[ASTNode] = []
             if args_str:
-                arg_parts = [a.strip() for a in args_str.split(' and ')]
-                arguments = [self._parse_expression(arg) for arg in arg_parts]
+                arg_parts = self._split_args(args_str)
+                arguments = [self._parse_expression(arg) for arg in arg_parts if arg]
             
             return FunctionCallNode(
                 node_type=NodeType.FUNCTION_CALL,
@@ -642,6 +666,22 @@ class IntentParser:
         """Parse an expression (literal, variable, operation)"""
         expr_str = expr_str.strip()
 
+        # Allow function calls inside expressions (e.g., "call add with 1 and 2")
+        call_match = re.match(r'^(?:call|run)\s+(\w+)(?:\s+with\s+(.+))?$', expr_str, re.IGNORECASE)
+        if call_match:
+            func_name = call_match.group(1)
+            args_str = call_match.group(2)
+            arguments: List[ASTNode] = []
+            if args_str:
+                arg_parts = self._split_args(args_str)
+                arguments = [self._parse_expression(arg) for arg in arg_parts if arg]
+            return FunctionCallNode(
+                node_type=NodeType.FUNCTION_CALL,
+                function_name=func_name,
+                arguments=arguments,
+                line_number=self.current_line
+            )
+
         # Handle "x followed by y" pattern (string concatenation) before literal detection
         if ' followed by ' in expr_str:
             parts = expr_str.split(' followed by ')
@@ -688,17 +728,22 @@ class IntentParser:
         
         # Check for binary operations in natural language
         for op_phrase, op_symbol in self.arithmetic_ops.items():
-            if op_phrase in expr_str.lower():
+            # Only treat as an operator when it appears as a standalone phrase,
+            # and both sides of the split are non-empty.
+            if re.search(rf'\b{re.escape(op_phrase)}\b', expr_str, re.IGNORECASE):
                 parts = re.split(re.escape(op_phrase), expr_str, flags=re.IGNORECASE, maxsplit=1)
                 if len(parts) == 2:
-                    left = self._parse_expression(parts[0].strip())
-                    right = self._parse_expression(parts[1].strip())
-                    return BinaryOpNode(
-                        node_type=NodeType.BINARY_OP,
-                        operator=op_symbol,
-                        left=left,
-                        right=right
-                    )
+                    left_part = parts[0].strip()
+                    right_part = parts[1].strip()
+                    if left_part and right_part:
+                        left = self._parse_expression(left_part)
+                        right = self._parse_expression(right_part)
+                        return BinaryOpNode(
+                            node_type=NodeType.BINARY_OP,
+                            operator=op_symbol,
+                            left=left,
+                            right=right
+                        )
         
         # Check for "the value of x" pattern
         value_match = re.match(r'the\s+value\s+of\s+(\w+)', expr_str, re.IGNORECASE)
@@ -707,6 +752,54 @@ class IntentParser:
         
         # Default to variable reference
         return VariableNode(NodeType.VARIABLE, name=expr_str)
+
+    def _split_args(self, args_str: str) -> List[str]:
+        """Split a function argument string on 'and' while respecting quotes/brackets."""
+        s = args_str.strip()
+        if not s:
+            return []
+
+        parts: List[str] = []
+        buf: List[str] = []
+        depth = 0
+        in_single = False
+        in_double = False
+        i = 0
+
+        while i < len(s):
+            ch = s[i]
+
+            if ch == '"' and not in_single:
+                in_double = not in_double
+                buf.append(ch)
+                i += 1
+                continue
+            if ch == "'" and not in_double:
+                in_single = not in_single
+                buf.append(ch)
+                i += 1
+                continue
+
+            if not in_single and not in_double:
+                if ch in ['[', '(', '{']:
+                    depth += 1
+                elif ch in [']', ')', '}'] and depth > 0:
+                    depth -= 1
+
+                if depth == 0 and s[i:i+5].lower() == ' and ':
+                    parts.append(''.join(buf).strip())
+                    buf = []
+                    i += 5
+                    continue
+
+            buf.append(ch)
+            i += 1
+
+        tail = ''.join(buf).strip()
+        if tail:
+            parts.append(tail)
+
+        return parts
     
     def _parse_condition(self, cond_str: str) -> ASTNode:
         """Parse a condition expression"""

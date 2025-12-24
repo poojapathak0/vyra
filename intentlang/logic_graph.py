@@ -411,11 +411,129 @@ class LogicGraphBuilder:
         func_node = self.graph.add_node('function_def', {
             'name': node.name,
             'parameters': node.parameters,
-            'body': [self.serialize_expression(stmt) for stmt in node.body],
+            'body': [self.serialize_statement(stmt) for stmt in node.body],
             'line': node.line_number
         })
         self.graph.add_edge(from_node_id, func_node.id)
         return func_node.id
+
+    def serialize_statement(self, stmt: ASTNode) -> Dict:
+        """Serialize a statement AST node into a JSON-safe dict."""
+        if stmt is None:
+            return {'type': 'noop'}
+
+        if isinstance(stmt, AssignmentNode):
+            return {
+                'type': 'assignment',
+                'variable': stmt.variable_name,
+                'value': self.serialize_expression(stmt.value),
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, OutputNode):
+            return {
+                'type': 'output',
+                'expressions': [self.serialize_expression(e) for e in stmt.expressions],
+                'newline': stmt.newline,
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, InputNode):
+            return {
+                'type': 'input',
+                'prompt': stmt.prompt,
+                'variable': stmt.variable_name,
+                'input_type': stmt.input_type,
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, IfStatementNode):
+            return {
+                'type': 'if',
+                'condition': self.serialize_expression(stmt.condition),
+                'then': [self.serialize_statement(s) for s in stmt.then_block],
+                'else': [self.serialize_statement(s) for s in stmt.else_block],
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, WhileLoopNode):
+            return {
+                'type': 'while',
+                'condition': self.serialize_expression(stmt.condition),
+                'body': [self.serialize_statement(s) for s in stmt.body],
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, ForLoopNode):
+            return {
+                'type': 'for_each',
+                'iterator': stmt.iterator_var,
+                'iterable': self.serialize_expression(stmt.iterable),
+                'body': [self.serialize_statement(s) for s in stmt.body],
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, RepeatLoopNode):
+            return {
+                'type': 'repeat',
+                'count': self.serialize_expression(stmt.count),
+                'body': [self.serialize_statement(s) for s in stmt.body],
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, FunctionCallNode):
+            return {
+                'type': 'function_call',
+                'function': stmt.function_name,
+                'arguments': [self.serialize_expression(a) for a in stmt.arguments],
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, ReturnNode):
+            return {
+                'type': 'return',
+                'value': self.serialize_expression(stmt.value) if stmt.value else None,
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, BreakNode):
+            return {'type': 'break', 'line': stmt.line_number}
+
+        if isinstance(stmt, ContinueNode):
+            return {'type': 'continue', 'line': stmt.line_number}
+
+        if isinstance(stmt, ListAppendNode):
+            return {
+                'type': 'list_append',
+                'list': self.serialize_expression(stmt.list_var),
+                'value': self.serialize_expression(stmt.value),
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, FileReadNode):
+            return {
+                'type': 'file_read',
+                'filepath': self.serialize_expression(stmt.filepath),
+                'variable': stmt.variable_name,
+                'mode': stmt.mode,
+                'line': stmt.line_number
+            }
+
+        if isinstance(stmt, FileWriteNode):
+            return {
+                'type': 'file_write',
+                'filepath': self.serialize_expression(stmt.filepath),
+                'content': self.serialize_expression(stmt.content),
+                'mode': stmt.mode,
+                'line': stmt.line_number
+            }
+
+        # Fallback: treat as expression statement
+        return {
+            'type': 'expr',
+            'expr': self.serialize_expression(stmt),
+            'line': getattr(stmt, 'line_number', 0)
+        }
     
     def visit_function_call(self, node: FunctionCallNode, from_node_id: int) -> int:
         """Create function call node"""
