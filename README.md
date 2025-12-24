@@ -5,10 +5,10 @@
 ## ✨ Why Vyra?
 
 - **Zero Syntax Barriers**: Write code like you think
-- **Blazing Fast**: Compiles to native code, performs like C++
-- **Universal**: Build anything—web apps, ML models, games, servers
+- **Practical**: Great for learning, scripting, and small CLI tools
+- **Deterministic**: Same input → same output (logic-graph execution)
 - **Educational**: Perfect for CS students and beginners
-- **Production-Ready**: Robust error handling, optimizations, and extensibility
+- **Extensible**: Add new sentence patterns and built-ins in Python
 
 ## 🎯 Example
 
@@ -24,12 +24,10 @@ Otherwise display "Small number.".
 ## 🏗️ Features
 
 - **Natural Language Syntax**: Write imperative instructions in plain English
-- **Smart Parsing**: NLP-powered with deterministic logic graphs
-- **High Performance**: LLVM-based compilation with -O3 optimizations
-- **Multi-Paradigm**: Imperative, functional, and OOP—all in natural terms
-- **Rich Ecosystem**: Built-in support for web, ML, data science, concurrency
-- **Educational Tools**: Code explanations, flow visualizations, gamification
-- **Robust**: Handles ambiguities, typos, edge cases gracefully
+- **Smart Parsing**: Rule-based parser with a deterministic logic-graph IR
+- **Interpreter Runtime**: Executes graphs with scoped variables and functions
+- **Core Language**: Variables, arithmetic, I/O, conditionals, loops, lists, functions, file I/O
+- **Debuggable**: Optional graph visualization + debug mode (where available)
 
 ## 🚀 Quick Start
 
@@ -55,17 +53,21 @@ python -m vyra repl
 
 - [Language Specification](docs/SPECIFICATION.md)
 - [Tutorial](docs/TUTORIAL.md)
+- [Quick Reference](docs/QUICKREF.md)
 - [Examples](examples/)
-- [API Reference](docs/API.md)
 - [Contributing](CONTRIBUTING.md)
 
 ## 🎮 Example Programs
 
+- **Hello World**: [examples/hello.intent](examples/hello.intent)
 - **Calculator**: [examples/calculator.intent](examples/calculator.intent)
-- **Web Server**: [examples/webserver.intent](examples/webserver.intent)
-- **Machine Learning**: [examples/ml_classifier.intent](examples/ml_classifier.intent)
+- **Functions**: [examples/functions.intent](examples/functions.intent)
 - **Game**: [examples/number_game.intent](examples/number_game.intent)
-- **Data Processing**: [examples/data_analysis.intent](examples/data_analysis.intent)
+- **Lists**: [examples/list_processing.intent](examples/list_processing.intent)
+- **Fibonacci**: [examples/fibonacci.intent](examples/fibonacci.intent)
+- **File I/O**: [examples/file_io.intent](examples/file_io.intent)
+- **Greeting**: [examples/greeting.intent](examples/greeting.intent)
+- **Temperature**: [examples/temperature.intent](examples/temperature.intent)
 
 ## 🏛️ Architecture
 
@@ -88,29 +90,10 @@ python -m vyra repl
     └──────────────┘    └──────────┘
 ```
 
-## 🎨 IDE
-
-Launch the web-based IDE:
-
-```bash
-cd ide
-npm install
-npm run dev
-```
-
-Features:
-- Live parsing and syntax feedback
-- Logic graph visualization
-- Dark mode with smooth animations
-- Collaborative editing
-- Voice-to-code input
-
 ## ⚡ Performance
 
-Vyra aims for near-C++ performance:
-- **Fibonacci(35)**: ~2x slower than C++ (optimized)
-- **Matrix operations**: ~1.5x slower than NumPy
-- **Web serving**: Comparable to Node.js
+Vyra currently runs via an interpreter.
+A native compiler (LLVM/AOT) is a future roadmap item.
 
 ## 🤝 Contributing
 

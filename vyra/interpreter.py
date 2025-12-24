@@ -65,7 +65,7 @@ class ExecutionContext:
         raise NameError(f"Function '{name}' is not defined")
 
 
-class IntentInterpreter:
+class VyraInterpreter:
     """
     Interpreter for Vyra logic graphs
     Executes programs by traversing the graph and maintaining execution state
@@ -78,6 +78,7 @@ class IntentInterpreter:
         self.iteration_count = 0
         self.max_call_depth = 200
         self.call_depth = 0
+
     
     def execute(self, graph: LogicGraph) -> Any:
         """Execute a logic graph"""

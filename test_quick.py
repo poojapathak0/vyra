@@ -1,9 +1,9 @@
 """Quick test script to verify Vyra installation."""
 
 import sys
-from vyra.parser import IntentParser
+from vyra.parser import VyraParser
 from vyra.logic_graph import LogicGraph
-from vyra.interpreter import IntentInterpreter
+from vyra.interpreter import VyraInterpreter
 
 
 def test_basic():
@@ -14,7 +14,7 @@ def test_basic():
     print("Test 1: Simple Output")
     code = 'Display "Hello, Vyra!".'
     
-    parser = IntentParser()
+    parser = VyraParser()
     ast = parser.parse(code)
 
     assert not parser.errors, f"Parser errors: {parser.errors}"
@@ -22,7 +22,7 @@ def test_basic():
     graph = LogicGraph()
     graph.from_ast(ast)
     
-    interpreter = IntentInterpreter()
+    interpreter = VyraInterpreter()
     print("Output: ", end="")
     interpreter.execute(graph)
     print("✅ Test 1 passed\n")
@@ -42,7 +42,7 @@ Display "The sum is: " followed by the value of sum.
     graph = LogicGraph()
     graph.from_ast(ast)
     
-    interpreter = IntentInterpreter()
+    interpreter = VyraInterpreter()
     print("Output: ", end="")
     interpreter.execute(graph)
     print("✅ Test 2 passed\n")
@@ -63,7 +63,7 @@ Otherwise:
     graph = LogicGraph()
     graph.from_ast(ast)
     
-    interpreter = IntentInterpreter()
+    interpreter = VyraInterpreter()
     print("Output: ", end="")
     interpreter.execute(graph)
     print("✅ Test 3 passed\n")
@@ -83,7 +83,7 @@ Display "Counter: " followed by the value of counter.
     graph = LogicGraph()
     graph.from_ast(ast)
     
-    interpreter = IntentInterpreter()
+    interpreter = VyraInterpreter()
     print("Output: ", end="")
     interpreter.execute(graph)
     print("✅ Test 4 passed\n")
@@ -101,7 +101,7 @@ Display "Numbers: " followed by the value of numbers.
     graph = LogicGraph()
     graph.from_ast(ast)
     
-    interpreter = IntentInterpreter()
+    interpreter = VyraInterpreter()
     print("Output: ", end="")
     interpreter.execute(graph)
     print("✅ Test 5 passed\n")

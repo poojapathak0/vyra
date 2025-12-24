@@ -6,17 +6,17 @@ Tests complete programs from parsing to execution.
 import pytest
 from io import StringIO
 import sys
-from vyra.parser import IntentParser
+from vyra.parser import VyraParser
 from vyra.logic_graph import LogicGraph
-from vyra.interpreter import IntentInterpreter
+from vyra.interpreter import VyraInterpreter
 
 
 class TestIntegration:
     """Integration tests for complete programs"""
     
     def setup_method(self):
-        self.parser = IntentParser()
-        self.interpreter = IntentInterpreter()
+        self.parser = VyraParser()
+        self.interpreter = VyraInterpreter()
     
     def execute_code(self, code: str, inputs: list = None) -> tuple:
         """Helper to execute code and capture output"""

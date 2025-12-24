@@ -56,3 +56,7 @@ out/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local book project (keep local; don't commit)
+book/
+book.zip

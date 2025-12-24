@@ -9,9 +9,9 @@ from rich.syntax import Syntax
 from rich.panel import Panel
 from rich.markdown import Markdown
 
-from .parser import IntentParser
+from .parser import VyraParser
 from .logic_graph import LogicGraph
-from .interpreter import IntentInterpreter
+from .interpreter import VyraInterpreter
 
 console = Console()
 
@@ -27,7 +27,7 @@ def run_file(filepath: str, debug: bool = False, visualize: bool = False):
         
         # Parse
         console.print("[yellow]📝 Parsing...[/yellow]")
-        parser = IntentParser()
+        parser = VyraParser()
         ast = parser.parse(source_code)
         
         if parser.errors:
@@ -56,7 +56,7 @@ def run_file(filepath: str, debug: bool = False, visualize: bool = False):
         console.print("[yellow]🚀 Executing...[/yellow]")
         console.print("[cyan]" + "="*50 + "[/cyan]\n")
         
-        interpreter = IntentInterpreter(debug=debug)
+        interpreter = VyraInterpreter(debug=debug)
         result = interpreter.execute(graph)
         
         console.print(f"\n[cyan]" + "="*50 + "[/cyan]")
@@ -87,8 +87,8 @@ def repl():
         border_style="cyan"
     ))
     
-    parser = IntentParser()
-    interpreter = IntentInterpreter()
+    parser = VyraParser()
+    interpreter = VyraInterpreter()
     graph = LogicGraph()
     
     # Initialize a persistent context
@@ -199,7 +199,7 @@ def parse_only(filepath: str, output: str = None):
         with open(filepath, 'r', encoding='utf-8') as f:
             source_code = f.read()
         
-        parser = IntentParser()
+        parser = VyraParser()
         ast = parser.parse(source_code)
         
         if parser.errors:

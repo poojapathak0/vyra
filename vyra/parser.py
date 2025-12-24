@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple, Dict, Any
 from .ast_nodes import *
 
 
-class IntentParser:
+class VyraParser:
     """
     Parses natural English sentences into an Abstract Syntax Tree (AST).
     Uses rule-based pattern matching with fuzzy matching for robustness.
@@ -46,6 +46,7 @@ class IntentParser:
         self.logical_ops = {
             'and': 'and', 'or': 'or', 'not': 'not'
         }
+
     
     def _build_action_patterns(self) -> Dict[str, List[Tuple[str, str]]]:
         """Build regex patterns for action recognition"""

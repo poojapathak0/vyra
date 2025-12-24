@@ -3,15 +3,15 @@
 import sys
 from io import StringIO
 
-from vyra.parser import IntentParser
+from vyra.parser import VyraParser
 from vyra.logic_graph import LogicGraph
-from vyra.interpreter import IntentInterpreter
+from vyra.interpreter import VyraInterpreter
 
 
 class TestFunctions:
     def setup_method(self):
-        self.parser = IntentParser()
-        self.interpreter = IntentInterpreter()
+        self.parser = VyraParser()
+        self.interpreter = VyraInterpreter()
 
     def execute_code(self, code: str) -> str:
         ast = self.parser.parse(code)

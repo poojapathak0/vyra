@@ -1,7 +1,7 @@
 """Unit tests for Vyra parser."""
 
 import pytest
-from vyra.parser import IntentParser
+from vyra.parser import VyraParser
 from vyra.ast_nodes import *
 
 
@@ -9,7 +9,7 @@ class TestParser:
     """Test the Vyra parser"""
     
     def setup_method(self):
-        self.parser = IntentParser()
+        self.parser = VyraParser()
     
     def test_simple_assignment(self):
         """Test parsing simple variable assignment"""
