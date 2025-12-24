@@ -1,0 +1,33 @@
+# Temperature Converter
+# Convert between Celsius and Fahrenheit
+
+Display "=== Temperature Converter ===".
+Display "".
+Display "1. Celsius to Fahrenheit".
+Display "2. Fahrenheit to Celsius".
+Display "".
+
+Ask the user for their choice called choice.
+
+If choice is equal to 1:
+  Ask the user for temperature in Celsius called celsius.
+  
+  # Formula: F = C * 9/5 + 32
+  Multiply celsius by 9 and store the result in temp.
+  Divide temp by 5 and store the result in temp.
+  Add temp and 32 and store the result in fahrenheit.
+  
+  Display the value of celsius followed by "°C = " followed by the value of fahrenheit followed by "°F".
+
+If choice is equal to 2:
+  Ask the user for temperature in Fahrenheit called fahrenheit.
+  
+  # Formula: C = (F - 32) * 5/9
+  Subtract 32 from fahrenheit and store the result in temp.
+  Multiply temp by 5 and store the result in temp.
+  Divide temp by 9 and store the result in celsius.
+  
+  Display the value of fahrenheit followed by "°F = " followed by the value of celsius followed by "°C".
+
+Display "".
+Display "Conversion complete!".

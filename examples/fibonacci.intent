@@ -1,0 +1,27 @@
+# Fibonacci Sequence Generator
+# Demonstrates loops, variables, and output
+
+Display "=== Fibonacci Sequence Generator ===".
+Display "".
+
+Ask the user for how many numbers they want to see called count.
+
+Display "".
+Display "First " followed by the value of count followed by " Fibonacci numbers:".
+
+Set a to 0.
+Set b to 1.
+Set i to 0.
+
+Repeat while i is less than count:
+  Display the value of a.
+  
+  # Calculate next Fibonacci number
+  Add a and b and store the result in next.
+  Set a to b.
+  Set b to next.
+  
+  Increment i.
+
+Display "".
+Display "Done!".

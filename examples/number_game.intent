@@ -1,0 +1,36 @@
+# Number Guessing Game
+# Demonstrates loops, conditionals, and user interaction
+
+Display "=== Number Guessing Game ===".
+Display "I'm thinking of a number between 1 and 100.".
+Display "".
+
+# In a full implementation, we'd have random number generation
+# For now, we'll use a fixed secret number
+Set secret_number to 42.
+Set attempts to 0.
+Set max_attempts to 10.
+
+Repeat while attempts is less than max_attempts:
+  Increment attempts.
+  
+  Display "Attempt " followed by the value of attempts followed by " of " followed by the value of max_attempts followed by ":".
+  Ask the user for their guess called guess.
+  
+  If guess is equal to secret_number:
+    Display "🎉 Congratulations! You guessed it!".
+    Display "You won in " followed by the value of attempts followed by " attempts.".
+    Stop the loop.
+  
+  If guess is less than secret_number:
+    Display "Too low! Try a higher number.".
+  
+  If guess is greater than secret_number:
+    Display "Too high! Try a lower number.".
+  
+  Display "".
+
+If attempts is equal to max_attempts:
+  Display "Game over! The number was " followed by the value of secret_number followed by ".".
+
+Display "Thanks for playing!".

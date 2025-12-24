@@ -1,0 +1,39 @@
+# Interactive Calculator
+# Demonstrates user input, arithmetic, and conditionals
+
+Display "=== IntentLang Calculator ===".
+Display "".
+
+Ask the user for a number called a.
+Ask the user for another number called b.
+
+Display "".
+Display "Choose an operation:".
+Display "1. Add".
+Display "2. Subtract".
+Display "3. Multiply".
+Display "4. Divide".
+
+Ask the user for their choice called choice.
+
+If choice is equal to 1:
+  Add a and b and store the result in result.
+  Display "Result: " followed by the value of a followed by " + " followed by the value of b followed by " = " followed by the value of result.
+
+If choice is equal to 2:
+  Subtract b from a and store the result in result.
+  Display "Result: " followed by the value of a followed by " - " followed by the value of b followed by " = " followed by the value of result.
+
+If choice is equal to 3:
+  Multiply a and b and store the result in result.
+  Display "Result: " followed by the value of a followed by " × " followed by the value of b followed by " = " followed by the value of result.
+
+If choice is equal to 4:
+  If b is equal to 0:
+    Display "Error: Cannot divide by zero!".
+  Otherwise:
+    Divide a by b and store the result in result.
+    Display "Result: " followed by the value of a followed by " ÷ " followed by the value of b followed by " = " followed by the value of result.
+
+Display "".
+Display "Thank you for using IntentLang Calculator!".

@@ -1,0 +1,25 @@
+# File I/O Example
+# Demonstrates reading from and writing to files
+
+Display "=== File I/O Demo ===".
+Display "".
+
+# Create some text content
+Set content to "Hello from IntentLang!".
+Set content to content followed by " This is a test file.".
+
+Display "Writing to file...".
+Write content to file "test_output.txt".
+Display "✓ File written successfully!".
+
+Display "".
+Display "Reading from file...".
+Read file "test_output.txt" into file_content.
+Display "✓ File read successfully!".
+
+Display "".
+Display "File contents:".
+Display the value of file_content.
+
+Display "".
+Display "Done!".

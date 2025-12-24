@@ -1,0 +1,23 @@
+# User Greeting Program
+# Demonstrates variables, input, and string concatenation
+
+Display "Welcome to IntentLang!".
+Display "".
+
+Ask the user for their name and store it in username.
+Ask the user for their age called age.
+
+Display "".
+Display "Hello, " followed by username followed by "!".
+
+If age is less than 18:
+  Display "You are a minor (" followed by the value of age followed by " years old).".
+
+If age is greater than or equal to 18:
+  Display "You are an adult (" followed by the value of age followed by " years old).".
+
+If age is greater than 65:
+  Display "You qualify for senior benefits!".
+
+Display "".
+Display "Nice to meet you, " followed by username followed by "! 👋".

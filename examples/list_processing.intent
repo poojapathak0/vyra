@@ -1,0 +1,40 @@
+# List Processing Example
+# Demonstrates lists, loops, and data manipulation
+
+Display "=== List Processing Demo ===".
+Display "".
+
+# Create a list of numbers
+Create a list called numbers with values [1, 2, 3, 4, 5].
+Display "Original numbers: " followed by the value of numbers.
+
+# Create empty lists for results
+Create a list called doubled.
+Create a list called evens.
+Create a list called odds.
+
+# Process each number
+For each num in numbers:
+  # Double the number
+  Multiply num by 2 and store the result in doubled_num.
+  Add doubled_num to doubled.
+  
+  # Check if even or odd
+  Set remainder to num modulo 2.
+  If remainder is equal to 0:
+    Add num to evens.
+  Otherwise:
+    Add num to odds.
+
+Display "".
+Display "Doubled: " followed by the value of doubled.
+Display "Even numbers: " followed by the value of evens.
+Display "Odd numbers: " followed by the value of odds.
+
+# Calculate sum
+Set sum to 0.
+For each num in numbers:
+  Add num to sum.
+
+Display "".
+Display "Sum of all numbers: " followed by the value of sum.
