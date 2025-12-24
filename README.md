@@ -63,6 +63,7 @@ If `--ai` is enabled but the required variables are missing, Vyra prints an AI r
 python -m vyra repl
 ``` 
 
+
 ## 📚 Documentation
 
 - [Language Specification](docs/SPECIFICATION.md)
