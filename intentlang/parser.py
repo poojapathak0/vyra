@@ -18,6 +18,7 @@ class IntentParser:
         self.current_line = 0
         self.indent_stack = [0]
         self.errors = []
+        self.known_list_vars = set()
         
         # Action verb mappings
         self.action_patterns = self._build_action_patterns()
@@ -51,6 +52,8 @@ class IntentParser:
         return {
             # Variable creation and assignment
             'create': [
+                (r'create\s+(?:an\s+|a\s+)?list\s+called\s+(\w+)(?:\s+with\s+values?\s+(.+))?', 'create_list'),
+                (r'make\s+(?:an\s+|a\s+)?list\s+called\s+(\w+)(?:\s+with\s+values?\s+(.+))?', 'create_list'),
                 (r'create\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
                 (r'make\s+(?:a\s+)?(?:variable\s+)?(?:called\s+)?(\w+)(?:\s+with\s+value\s+(.+))?', 'create_var'),
                 (r'define\s+(\w+)\s+as\s+(.+)', 'create_var'),
@@ -145,31 +148,45 @@ class IntentParser:
         Main entry point - parse IntentLang source code into AST
         """
         self.errors = []
+        self.known_list_vars = set()
+
         lines = source_code.strip().split('\n')
-        statements = []
-        
-        i = 0
-        while i < len(lines):
-            line = lines[i].strip()
-            self.current_line = i + 1
-            
-            # Skip empty lines and comments
-            if not line or line.startswith('#') or line.lower().startswith('note:'):
-                i += 1
-                continue
-            
-            # Parse statement
-            statement, lines_consumed = self._parse_statement(lines, i)
-            if statement:
-                statements.append(statement)
-            
-            i += lines_consumed
+        statements = self._parse_statements_from_lines(lines)
         
         return ProgramNode(
             node_type=NodeType.PROGRAM,
             statements=statements,
             line_number=0
         )
+
+    def _record_statement_effects(self, statement: ASTNode):
+        """Track simple semantic hints (e.g., which variables are lists) for disambiguation."""
+        if isinstance(statement, AssignmentNode):
+            if isinstance(statement.value, LiteralNode) and statement.value.node_type == NodeType.LIST:
+                self.known_list_vars.add(statement.variable_name)
+
+    def _parse_statements_from_lines(self, lines: List[str]) -> List[ASTNode]:
+        """Parse a list of lines into a list of AST statements (supports nested blocks)."""
+        statements: List[ASTNode] = []
+        i = 0
+        while i < len(lines):
+            raw_line = lines[i]
+            line = raw_line.strip()
+            self.current_line = i + 1
+
+            # Skip empty lines and comments
+            if not line or line.startswith('#') or line.lower().startswith('note:'):
+                i += 1
+                continue
+
+            statement, lines_consumed = self._parse_statement(lines, i)
+            if statement:
+                statements.append(statement)
+                self._record_statement_effects(statement)
+
+            i += max(lines_consumed, 1)
+
+        return statements
     
     def _parse_statement(self, lines: List[str], start_idx: int) -> Tuple[Optional[ASTNode], int]:
         """Parse a single statement, potentially spanning multiple lines"""
@@ -201,6 +218,25 @@ class IntentParser:
             var_name = match.group(1)
             value_str = match.group(2) if match.lastindex >= 2 else None
             value = self._parse_expression(value_str) if value_str else LiteralNode(NodeType.NULL, value=None)
+            return AssignmentNode(
+                node_type=NodeType.ASSIGNMENT,
+                variable_name=var_name,
+                value=value,
+                line_number=self.current_line
+            )
+
+        elif action_type == 'create_list':
+            var_name = match.group(1)
+            values_str = match.group(2) if match.lastindex >= 2 else None
+
+            if values_str and values_str.strip():
+                value = self._parse_expression(values_str)
+                # If user didn't use [..] syntax, fall back to empty list
+                if not (isinstance(value, LiteralNode) and value.node_type == NodeType.LIST):
+                    value = LiteralNode(NodeType.LIST, value=[])
+            else:
+                value = LiteralNode(NodeType.LIST, value=[])
+
             return AssignmentNode(
                 node_type=NodeType.ASSIGNMENT,
                 variable_name=var_name,
@@ -268,6 +304,17 @@ class IntentParser:
                 value_str = match.group(1)
                 var_name = match.group(2)
                 operator = '+'
+
+                # Disambiguation: if target is a known list, treat as append
+                if var_name in self.known_list_vars:
+                    value_node = self._parse_expression(value_str)
+                    list_node = VariableNode(NodeType.VARIABLE, name=var_name)
+                    return ListAppendNode(
+                        node_type=NodeType.LIST_APPEND,
+                        list_var=list_node,
+                        value=value_node,
+                        line_number=self.current_line
+                    )
             elif action_type == 'subtract_from':
                 value_str = match.group(1)
                 var_name = match.group(2)
@@ -464,18 +511,14 @@ class IntentParser:
         """Parse block statements (if, while, for, function)"""
         
         # Find the indented block
-        block_lines, lines_consumed = self._extract_block(lines, start_idx + 1)
+        block_lines, block_consumed = self._extract_block(lines, start_idx + 1)
+        lines_consumed = 1 + block_consumed
         
         if action_type == 'if':
             condition_str = match.group(1)
             condition = self._parse_condition(condition_str)
-            
-            # Parse the then block
-            then_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    then_statements.append(stmt)
+
+            then_statements = self._parse_statements_from_lines(block_lines)
             
             return IfStatementNode(
                 node_type=NodeType.IF_STATEMENT,
@@ -487,12 +530,8 @@ class IntentParser:
         elif action_type == 'while':
             condition_str = match.group(1)
             condition = self._parse_condition(condition_str)
-            
-            body_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    body_statements.append(stmt)
+
+            body_statements = self._parse_statements_from_lines(block_lines)
             
             return WhileLoopNode(
                 node_type=NodeType.WHILE_LOOP,
@@ -512,11 +551,7 @@ class IntentParser:
                 operands=[condition]
             )
             
-            body_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    body_statements.append(stmt)
+            body_statements = self._parse_statements_from_lines(block_lines)
             
             return WhileLoopNode(
                 node_type=NodeType.WHILE_LOOP,
@@ -528,12 +563,8 @@ class IntentParser:
         elif action_type == 'repeat_times':
             count_str = match.group(1)
             count = LiteralNode(NodeType.NUMBER, value=int(count_str))
-            
-            body_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    body_statements.append(stmt)
+
+            body_statements = self._parse_statements_from_lines(block_lines)
             
             return RepeatLoopNode(
                 node_type=NodeType.REPEAT_LOOP,
@@ -546,12 +577,8 @@ class IntentParser:
             iterator_var = match.group(1)
             iterable_str = match.group(2)
             iterable = self._parse_expression(iterable_str)
-            
-            body_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    body_statements.append(stmt)
+
+            body_statements = self._parse_statements_from_lines(block_lines)
             
             return ForLoopNode(
                 node_type=NodeType.FOR_LOOP,
@@ -569,11 +596,7 @@ class IntentParser:
             if params_str:
                 parameters = [p.strip() for p in params_str.replace(' and ', ',').split(',')]
             
-            body_statements = []
-            for line in block_lines:
-                stmt, _ = self._parse_statement([line], 0)
-                if stmt:
-                    body_statements.append(stmt)
+            body_statements = self._parse_statements_from_lines(block_lines)
             
             return FunctionDefNode(
                 node_type=NodeType.FUNCTION_DEF,
@@ -597,7 +620,8 @@ class IntentParser:
         else:
             return block_lines, 1
         
-        # Collect all lines with greater or equal indentation
+        # Collect all lines with greater or equal indentation (dedent by base_indent,
+        # but keep deeper indentation so nested blocks can be parsed correctly).
         while i < len(lines):
             line = lines[i]
             if not line.strip():  # Skip empty lines
@@ -608,15 +632,30 @@ class IntentParser:
             
             if current_indent < base_indent:
                 break  # End of block
-            
-            block_lines.append(line.strip())
+
+            block_lines.append(line[base_indent:])
             i += 1
-        
-        return block_lines, i - start_idx + 1
+
+        return block_lines, i - start_idx
     
     def _parse_expression(self, expr_str: str) -> ASTNode:
         """Parse an expression (literal, variable, operation)"""
         expr_str = expr_str.strip()
+
+        # Handle "x followed by y" pattern (string concatenation) before literal detection
+        if ' followed by ' in expr_str:
+            parts = expr_str.split(' followed by ')
+            if len(parts) >= 2:
+                result = self._parse_expression(parts[0].strip())
+                for part in parts[1:]:
+                    right = self._parse_expression(part.strip())
+                    result = BinaryOpNode(
+                        node_type=NodeType.BINARY_OP,
+                        operator='+',
+                        left=result,
+                        right=right
+                    )
+                return result
         
         # Check for literals
         # String literal
@@ -666,41 +705,13 @@ class IntentParser:
         if value_match:
             return VariableNode(NodeType.VARIABLE, name=value_match.group(1))
         
-        # Check for "x followed by y" pattern (string concatenation)
-        if ' followed by ' in expr_str:
-            parts = expr_str.split(' followed by ')
-            if len(parts) >= 2:
-                result = self._parse_expression(parts[0].strip())
-                for part in parts[1:]:
-                    right = self._parse_expression(part.strip())
-                    result = BinaryOpNode(
-                        node_type=NodeType.BINARY_OP,
-                        operator='+',
-                        left=result,
-                        right=right
-                    )
-                return result
-        
         # Default to variable reference
         return VariableNode(NodeType.VARIABLE, name=expr_str)
     
     def _parse_condition(self, cond_str: str) -> ASTNode:
         """Parse a condition expression"""
         cond_str = cond_str.strip()
-        
-        # Check for logical operators
-        for op_phrase, op_symbol in self.logical_ops.items():
-            if f' {op_phrase} ' in cond_str.lower():
-                parts = re.split(rf'\s+{re.escape(op_phrase)}\s+', cond_str, flags=re.IGNORECASE, maxsplit=1)
-                if len(parts) == 2:
-                    left = self._parse_condition(parts[0].strip())
-                    right = self._parse_condition(parts[1].strip())
-                    return LogicalOpNode(
-                        node_type=NodeType.LOGICAL_OP,
-                        operator=op_symbol,
-                        operands=[left, right]
-                    )
-        
+
         # Check for comparison operators (prefer longest match)
         for op_phrase in sorted(self.comparison_ops.keys(), key=len, reverse=True):
             op_symbol = self.comparison_ops[op_phrase]
@@ -714,6 +725,19 @@ class IntentParser:
                         operator=op_symbol,
                         left=left,
                         right=right
+                    )
+
+        # Check for logical operators (only after comparisons)
+        for op_phrase, op_symbol in self.logical_ops.items():
+            if f' {op_phrase} ' in cond_str.lower():
+                parts = re.split(rf'\s+{re.escape(op_phrase)}\s+', cond_str, flags=re.IGNORECASE, maxsplit=1)
+                if len(parts) == 2:
+                    left = self._parse_condition(parts[0].strip())
+                    right = self._parse_condition(parts[1].strip())
+                    return LogicalOpNode(
+                        node_type=NodeType.LOGICAL_OP,
+                        operator=op_symbol,
+                        operands=[left, right]
                     )
         
         # Default: treat as boolean expression

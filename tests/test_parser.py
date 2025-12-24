@@ -195,12 +195,13 @@ While i is less than or equal to 5:
   Increment i.
         """
         ast = self.parser.parse(code)
-        
-        assert len(ast.statements) == 4
+
+        assert len(ast.statements) == 5
         assert isinstance(ast.statements[0], OutputNode)
         assert isinstance(ast.statements[1], InputNode)
         assert isinstance(ast.statements[2], IfStatementNode)
         assert isinstance(ast.statements[3], AssignmentNode)
+        assert isinstance(ast.statements[4], WhileLoopNode)
 
 
 if __name__ == '__main__':
